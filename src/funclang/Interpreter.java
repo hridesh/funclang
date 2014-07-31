@@ -13,7 +13,7 @@ import funclang.AST.*;
 public class Interpreter {
 	public static void main(String[] args) {
 		System.out.println("Type a program to evaluate and press the enter key," + 
-							" e.g. (let ((a 3) (b 100) (c 84) (d 279) (e 277)) (+ (* a b) (/ c (- d e)))) \n" + 
+							" e.g. ((lambda (av bv cv) (let ((a av) (b bv) (c cv) (d 279) (e 277)) (+ (* a b) (/ c (- d e))))) 3 100 84) \n" + 
 							"Press Ctrl + C to exit.");
 		Reader reader = new Reader();
 		Evaluator eval = new Evaluator();
