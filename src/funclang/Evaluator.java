@@ -82,7 +82,7 @@ public class Evaluator implements Visitor<Value> {
 	}	
 
 	@Override
-	public Value visit(LetExp e, Env env) { // New for funclang.
+	public Value visit(LetExp e, Env env) { // New for varlang.
 		List<String> names = e.names();
 		List<Exp> value_exps = e.value_exps();
 		List<Value> values = new ArrayList<Value>(value_exps.size());
@@ -96,5 +96,15 @@ public class Evaluator implements Visitor<Value> {
 
 		return (Value) e.body().accept(this, new_env);		
 	}	
+
+	@Override
+	public Value visit(LambdaExp e, Env env) { // New for funclang.
+		return new Value.Int(42); //TODO:
+	}
 	
+	@Override
+	public Value visit(CallExp e, Env env) { // New for funclang.
+		return new Value.Int(42); //TODO:
+	}
+
 }
