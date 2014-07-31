@@ -1,7 +1,28 @@
 package funclang;
 
+import java.util.List;
+
+import funclang.AST.Exp;
+
 public interface Value {
 	public String tostring();
+	static class Fun implements Value { //New in the funclang
+		Env _env;
+		List<String> _formals;
+		Exp _body;
+		public Fun(Env env, List<String> formals, Exp body) {
+			_env = env;
+			_formals = formals;
+			_body = body;
+		}
+		public Env env() { return _env; }
+		public List<String> formals() { return _formals; }
+		public Exp body() { return _body; }
+	    public String tostring() { 
+	    	//TODO: print formals and env. 
+	    	return "(lambda (" + ")" + _body.toString() + ")"; 
+	    }
+	}
 	static class Int implements Value {
 	    int _val;
 	    public Int(int v) { _val = v; } 
