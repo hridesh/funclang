@@ -14,6 +14,8 @@ grammar VarLang;
         | multexp 
         | divexp
         | letexp
+        | lambdaexp //New for funclang
+        | callexp //New for funclang
         ;
  
  varexp  : 
@@ -59,10 +61,24 @@ grammar VarLang;
  			')' 
  		;
 
+ lambdaexp :
+ 		'(' Lambda 
+ 			'(' Identifier+ ')'
+ 			exp 
+ 			')' 
+ 		;
+
+ callexp :
+ 		'(' exp 
+ 			exp+ 
+ 			')' 
+ 		;
+
 // Keywords
 
  Let : 'let' ;
-
+ Lambda : 'lambda' ;
+ 
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase
 
