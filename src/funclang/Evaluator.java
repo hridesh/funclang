@@ -18,6 +18,7 @@ import funclang.Env.EmptyEnv;
 import funclang.Env.ExtendEnv;
 
 public class Evaluator implements Visitor<Value> {
+	Printer.ExpToStringConverter ts = new Printer.ExpToStringConverter();
 	
 	Value valueOf(Program p) {
 		Env env = new EmptyEnv();
@@ -99,12 +100,31 @@ public class Evaluator implements Visitor<Value> {
 
 	@Override
 	public Value visit(LambdaExp e, Env env) { // New for funclang.
-		return new Value.Int(42); //TODO:
+		return new Value.Fun(env, e.formals(), e.body());
 	}
 	
 	@Override
 	public Value visit(CallExp e, Env env) { // New for funclang.
-		return new Value.Int(42); //TODO:
+		Object result = e.operator().accept(this, env);
+		if(!(result instanceof Value.Fun))
+			return new Value.DynamicError("Operator not a function in call " +  ts.visit(e, env));
+		Value.Fun operator =  (Value.Fun) result; //Dynamic checking
+		List<Exp> operands = e.operands();
+
+		// Call-by-value semantics
+		List<Value> actuals = new ArrayList<Value>(operands.size());
+		for(Exp exp : operands) 
+			actuals.add((Value)exp.accept(this, env));
+		
+		List<String> formals = operator.formals();
+		if (formals.size()!=actuals.size())
+			return new Value.DynamicError("Argument mismatch in call " + ts.visit(e, env));
+
+		Env body_env = operator.env();
+		for (int index = 0; index < formals.size(); index++)
+			body_env = new ExtendEnv(body_env, formals.get(index), actuals.get(index));
+		
+		return (Value) operator.body().accept(this, body_env);
 	}
 
 }
