@@ -27,7 +27,8 @@ public class Reader {
 	private static final int 
 		program = 0, exp = 1, varexp = 2, numexp = 3,
 		addexp = 4, subexp = 5, multexp = 6, divexp = 7,
-		letexp = 8 // New expression for this language.
+		letexp = 8, // New expression for the varlang language.
+		lambdaexp = 9, callexp = 10 // New expressions for this language.
 		;
 
 	private static final boolean DEBUG = false;
@@ -141,6 +142,8 @@ public class Reader {
 				case multexp: return new AST.MultExp(visitChildrenHelper(node));
 				case divexp: return new AST.DivExp(visitChildrenHelper(node));
 				case letexp: return convertLetExp(node);
+				case lambdaexp: return convertLambdaExp(node);
+				case callexp: return convertCallExp(node);
 				case program: 
 				default: 
 					System.out.println("Conversion error (from parse tree to AST): found unknown/unhandled case " + parser.getRuleNames()[node.getRuleContext().getRuleIndex()]);
@@ -149,7 +152,7 @@ public class Reader {
 		}
 		
 		/**
-		 *  Syntax: (let ((name value_exp)* ) body)
+		 *  Syntax: (let ((name value_exp)* ) body_exp)
 		 */  
 		private AST.Exp convertLetExp(RuleNode node){
 			int index = expect(node,0,"(", "let", "(");
@@ -167,6 +170,37 @@ public class Reader {
 			AST.Exp body = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
 			return new AST.LetExp(names,value_exps,body);
+		}
+		
+		/**
+		 *  Syntax: ( lambda ( Identifier+ ) body_exp )
+		 */
+		private AST.Exp convertLambdaExp(RuleNode node){
+			int index = expect(node,0,"(", "lambda", "(");
+			List<String> formals = new ArrayList<String>();	
+			while (!match(node,index,")")) {
+				String formal = expectString(node, index++, 1)[0];
+				formals.add(formal);
+			}
+			expect(node,index++, ")");
+			AST.Exp body_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.LambdaExp(formals, body_exp);
+		}
+		
+		/**
+		 *  Syntax: ( operator_exp operand_exp* )
+		 */
+		private AST.Exp convertCallExp(RuleNode node){
+			int index = expect(node,0,"(");
+			AST.Exp operator = node.getChild(index++).accept(this);
+			List<AST.Exp> operands = new ArrayList<AST.Exp>();	
+			while (!match(node,index,")")) {
+				AST.Exp operand = node.getChild(index++).accept(this);
+				operands.add(operand);
+			}
+			expect(node,index++, ")");
+			return new AST.CallExp(operator, operands);
 		}
 
 		public AST.Exp visitTerminal(TerminalNode node) {
