@@ -234,6 +234,54 @@ public interface AST {
 
 	}
 	
+	/**
+	 * An anonymous procedure declaration has the syntax
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class LambdaExp extends Exp {		
+		List<String> _formals;
+		Exp _body;
+		
+		public LambdaExp(List<String> formals, Exp body) {
+			_formals = formals;
+			_body = body;
+		}
+		
+		public List<String> formals() { return _formals; }
+		
+		public Exp body() { return _body; }
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+	
+	/**
+	 * A call expression has the syntax
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class CallExp extends Exp {
+		Exp _operator; 
+		List<Exp> _operands;
+		
+		public CallExp(Exp operator, List<Exp> operands) {
+			_operator = operator; 
+			_operands = operands;
+		}
+		
+		public Exp operator() { return _operator; }
+
+		public List<Exp> operands() { return _operands; }
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
 	public static class ErrorExp extends Exp {
 		public Object accept(Visitor visitor, Env env) {
 			return visitor.visit(this, env);
@@ -251,5 +299,7 @@ public interface AST {
 		public T visit(AST.SubExp e, Env env);
 		public T visit(AST.VarExp e, Env env);
 		public T visit(AST.LetExp e, Env env); // New for the varlang
+		public T visit(AST.LambdaExp e, Env env); // New for the funclang
+		public T visit(AST.CallExp e, Env env); // New for the funclang
 	}	
 }
