@@ -19,8 +19,12 @@ public interface Value {
 		public List<String> formals() { return _formals; }
 		public Exp body() { return _body; }
 	    public String tostring() { 
-	    	//TODO: print formals and env. 
-	    	return "(lambda (" + ")" + _body.toString() + ")"; 
+			String result = "(lambda ( ";
+			for(String formal : _formals) 
+				result += formal + " ";
+			result += ") ";
+			result += _body.accept(new Printer.ExpToStringConverter(), _env);
+			return result + ")";
 	    }
 	}
 	static class Int implements Value {

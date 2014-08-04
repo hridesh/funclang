@@ -74,11 +74,11 @@ public class Printer {
 		}
 		
 		public String visit(AST.LambdaExp e, Env env) {
-			String result = "(lambda (";
+			String result = "(lambda ( ";
 			for(String formal : e.formals()) 
 				result += formal + " ";
 			result += ") ";
-			result += e.body().accept(this, env) + " ";
+			result += e.body().accept(this, env);
 			return result + ")";
 		}
 		
