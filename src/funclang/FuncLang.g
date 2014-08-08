@@ -16,6 +16,10 @@ grammar VarLang;
         | letexp
         | lambdaexp //New for funclang
         | callexp //New for funclang
+        | ifexp //New for funclang
+        | lessexp //New for funclang
+        | equalexp //New for funclang
+        | greaterexp //New for funclang
         ;
  
  varexp  : 
@@ -74,10 +78,43 @@ grammar VarLang;
  			')' 
  		;
 
+ ifexp :
+ 		'(' If 
+ 		    exp 
+ 			exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ lessexp :
+ 		'(' Less 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ equalexp :
+ 		'(' Equal 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ greaterexp :
+ 		'(' Greater 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
 // Keywords
 
  Let : 'let' ;
  Lambda : 'lambda' ;
+ If : 'if' ; 
+ Less : '<' ;
+ Equal : '==' ;
+ Greater : '>' ;
  
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase
