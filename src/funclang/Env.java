@@ -23,9 +23,9 @@ public interface Env {
 	}
 	
 	static public class ExtendEnv implements Env {
-		Env _saved_env; 
-		String _var; 
-		Value _val; 
+		private Env _saved_env; 
+		private String _var; 
+		private Value _val; 
 		public ExtendEnv(Env saved_env, String var, Value val){
 			_saved_env = saved_env;
 			_var = var;
