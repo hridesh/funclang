@@ -126,5 +126,38 @@ public class Evaluator implements Visitor<Value> {
 		
 		return (Value) operator.body().accept(this, body_env);
 	}
+	
+	@Override
+	public Value visit(IfExp e, Env env) { // New for funclang.
+		Object result = e.conditional().accept(this, env);
+		if(!(result instanceof Value.Bool))
+			return new Value.DynamicError("Condition not a boolean in expression " +  ts.visit(e, env));
+		Value.Bool condition =  (Value.Bool) result; //Dynamic checking
+		
+		if(condition.v())
+			return (Value) e.then_exp().accept(this, env);
+		else return (Value) e.else_exp().accept(this, env);
+	}
 
+	@Override
+	public Value visit(LessExp e, Env env) { // New for funclang.
+		Value.Int first = (Value.Int) e.first_exp().accept(this, env);
+		Value.Int second = (Value.Int) e.second_exp().accept(this, env);
+		return new Value.Bool(first.v() < second.v());
+	}
+	
+	@Override
+	public Value visit(EqualExp e, Env env) { // New for funclang.
+		Value.Int first = (Value.Int) e.first_exp().accept(this, env);
+		Value.Int second = (Value.Int) e.second_exp().accept(this, env);
+		return new Value.Bool(first.v() == second.v());
+	}
+
+	@Override
+	public Value visit(GreaterExp e, Env env) { // New for funclang.
+		Value.Int first = (Value.Int) e.first_exp().accept(this, env);
+		Value.Int second = (Value.Int) e.second_exp().accept(this, env);
+		return new Value.Bool(first.v() > second.v());
+	}
+	
 }

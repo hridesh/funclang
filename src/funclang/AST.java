@@ -282,6 +282,99 @@ public interface AST {
 		}
 	}
 
+	/**
+	 * An if expression has the syntax
+	 * 
+	 * (if conditional_expression true_expression false_expression)
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class IfExp extends Exp {
+		Exp _conditional; 
+		Exp _then_exp; 
+		Exp _else_exp; 
+		
+		public IfExp(Exp conditional, Exp then_exp, Exp else_exp) {
+			_conditional = conditional;
+			_then_exp = then_exp; 
+			_else_exp = else_exp; 
+		}
+		
+		public Exp conditional() { return _conditional; }
+		public Exp then_exp() { return _then_exp; }
+		public Exp else_exp() { return _else_exp; }
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+	
+	/**
+	 * A less expression has the syntax
+	 * 
+	 * ( < first_expression second_expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class LessExp extends BinaryComparator {
+		public LessExp(Exp first_exp, Exp second_exp) {
+			super(first_exp, second_exp);
+		}
+				
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+	
+	public static abstract class BinaryComparator extends Exp {
+		private Exp _first_exp; 
+		private Exp _second_exp; 
+		BinaryComparator(Exp first_exp, Exp second_exp) {
+			_first_exp = first_exp;
+			_second_exp = second_exp; 
+		}
+		public Exp first_exp() { return _first_exp; }
+		public Exp second_exp() { return _second_exp; }
+	}
+
+	/**
+	 * An equal expression has the syntax
+	 * 
+	 * ( == first_expression second_expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class EqualExp extends BinaryComparator {
+		public EqualExp(Exp first_exp, Exp second_exp) {
+			super(first_exp, second_exp);
+		}
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	/**
+	 * A greater expression has the syntax
+	 * 
+	 * ( > first_expression second_expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class GreaterExp extends BinaryComparator {
+		public GreaterExp(Exp first_exp, Exp second_exp) {
+			super(first_exp, second_exp);
+		}
+				
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
 	public static class ErrorExp extends Exp {
 		public Object accept(Visitor visitor, Env env) {
 			return visitor.visit(this, env);
@@ -301,5 +394,9 @@ public interface AST {
 		public T visit(AST.LetExp e, Env env); // New for the varlang
 		public T visit(AST.LambdaExp e, Env env); // New for the funclang
 		public T visit(AST.CallExp e, Env env); // New for the funclang
+		public T visit(AST.IfExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.LessExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.EqualExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.GreaterExp e, Env env); // Additional expressions for convenience
 	}	
 }

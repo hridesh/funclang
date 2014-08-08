@@ -28,7 +28,8 @@ public class Reader {
 		program = 0, exp = 1, varexp = 2, numexp = 3,
 		addexp = 4, subexp = 5, multexp = 6, divexp = 7,
 		letexp = 8, // New expression for the varlang language.
-		lambdaexp = 9, callexp = 10 // New expressions for this language.
+		lambdaexp = 9, callexp = 10, // New expressions for this language.
+		ifexp = 11, lessexp = 12, equalexp = 13, greaterexp = 14 // Other expressions for convenience.
 		;
 
 	private static final boolean DEBUG = false;
@@ -144,6 +145,10 @@ public class Reader {
 				case letexp: return convertLetExp(node);
 				case lambdaexp: return convertLambdaExp(node);
 				case callexp: return convertCallExp(node);
+				case ifexp: return convertIfExp(node);
+				case lessexp: return convertLessExp(node);
+				case equalexp: return convertEqualExp(node);
+				case greaterexp: return convertGreaterExp(node);
 				case program: 
 				default: 
 					System.out.println("Conversion error (from parse tree to AST): found unknown/unhandled case " + parser.getRuleNames()[node.getRuleContext().getRuleIndex()]);
@@ -201,6 +206,51 @@ public class Reader {
 			}
 			expect(node,index++, ")");
 			return new AST.CallExp(operator, operands);
+		}
+
+		/**
+		 *  Syntax: ( if conditional_exp then_exp else_exp )
+		 */
+		private AST.Exp convertIfExp(RuleNode node){
+			int index = expect(node,0,"(", "if");
+			AST.Exp conditional = node.getChild(index++).accept(this);
+			AST.Exp then_exp = node.getChild(index++).accept(this);
+			AST.Exp else_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.IfExp(conditional, then_exp, else_exp);
+		}
+		
+		/**
+		 *  Syntax: ( < first_exp second_exp )
+		 */
+		private AST.Exp convertLessExp(RuleNode node){
+			int index = expect(node,0,"(","<");
+			AST.Exp first_exp = node.getChild(index++).accept(this);
+			AST.Exp second_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.LessExp(first_exp, second_exp);
+		}
+		
+		/**
+		 *  Syntax: ( == first_exp second_exp )
+		 */
+		private AST.Exp convertEqualExp(RuleNode node){
+			int index = expect(node,0,"(","==");
+			AST.Exp first_exp = node.getChild(index++).accept(this);
+			AST.Exp second_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.EqualExp(first_exp, second_exp);
+		}
+
+		/**
+		 *  Syntax: ( > first_exp second_exp )
+		 */
+		private AST.Exp convertGreaterExp(RuleNode node){
+			int index = expect(node,0,"(",">");
+			AST.Exp first_exp = node.getChild(index++).accept(this);
+			AST.Exp second_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.GreaterExp(first_exp, second_exp);
 		}
 
 		public AST.Exp visitTerminal(TerminalNode node) {
