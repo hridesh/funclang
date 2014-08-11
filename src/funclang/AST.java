@@ -235,6 +235,33 @@ public interface AST {
 	}
 	
 	/**
+	 * A define expression has the syntax 
+	 * 
+	 *  (define name expression)
+	 *  
+	 * @author hridesh
+	 *
+	 */
+	public static class DefineExp extends Exp {
+		private String _name;
+		private Exp _value_exp; 
+		
+		public DefineExp(String name, Exp value_exp) {
+			_name = name;
+			_value_exp = value_exp;
+		}
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+		
+		public String name() { return _name; }
+		
+		public Exp value_exp() { return _value_exp; }
+
+	}
+	
+	/**
 	 * An anonymous procedure declaration has the syntax
 	 * 
 	 * @author hridesh
@@ -392,6 +419,7 @@ public interface AST {
 		public T visit(AST.SubExp e, Env env);
 		public T visit(AST.VarExp e, Env env);
 		public T visit(AST.LetExp e, Env env); // New for the varlang
+		public T visit(AST.DefineExp e, Env env); // New for the definelang
 		public T visit(AST.LambdaExp e, Env env); // New for the funclang
 		public T visit(AST.CallExp e, Env env); // New for the funclang
 		public T visit(AST.IfExp e, Env env); // Additional expressions for convenience

@@ -27,9 +27,9 @@ public class Reader {
 	private static final int 
 		program = 0, exp = 1, varexp = 2, numexp = 3,
 		addexp = 4, subexp = 5, multexp = 6, divexp = 7,
-		letexp = 8, // New expression for the varlang language.
-		lambdaexp = 9, callexp = 10, // New expressions for this language.
-		ifexp = 11, lessexp = 12, equalexp = 13, greaterexp = 14 // Other expressions for convenience.
+		letexp = 8, defineexp = 9, // New expression for the varlang language.
+		lambdaexp = 10, callexp = 11, // New expressions for this language.
+		ifexp = 12, lessexp = 13, equalexp = 14, greaterexp = 15 // Other expressions for convenience.
 		;
 
 	private static final boolean DEBUG = false;
@@ -143,6 +143,7 @@ public class Reader {
 				case multexp: return new AST.MultExp(visitChildrenHelper(node));
 				case divexp: return new AST.DivExp(visitChildrenHelper(node));
 				case letexp: return convertLetExp(node);
+				case defineexp: return convertDefineExp(node);
 				case lambdaexp: return convertLambdaExp(node);
 				case callexp: return convertCallExp(node);
 				case ifexp: return convertIfExp(node);
@@ -175,6 +176,17 @@ public class Reader {
 			AST.Exp body = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
 			return new AST.LetExp(names,value_exps,body);
+		}
+
+		/**
+		 *  Syntax: (define name value_exp)
+		 */  
+		private AST.Exp convertDefineExp(RuleNode node){
+			int index = expect(node,0,"(", "define");
+			String name = expectString(node, index++, 1)[0];
+			AST.Exp value_exp = expectExp(node, index++, 1)[0];
+			expect(node,index++, ")");
+			return new AST.DefineExp(name,value_exp);
 		}
 		
 		/**

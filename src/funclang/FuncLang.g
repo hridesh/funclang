@@ -1,4 +1,4 @@
-grammar VarLang;
+grammar FuncLang;
  
  // Grammar of this Programming Language
  //  - grammar rules start with lowercase
@@ -14,6 +14,7 @@ grammar VarLang;
         | multexp 
         | divexp
         | letexp
+        | defineexp //New for definelang
         | lambdaexp //New for funclang
         | callexp //New for funclang
         | ifexp //New for funclang
@@ -65,6 +66,13 @@ grammar VarLang;
  			')' 
  		;
 
+ defineexp  :
+ 		'(' Define 
+ 			Identifier
+ 			exp
+ 			')' 
+ 		;
+
  lambdaexp :
  		'(' Lambda 
  			'(' Identifier+ ')'
@@ -110,6 +118,7 @@ grammar VarLang;
 // Keywords
 
  Let : 'let' ;
+ Define : 'define' ;
  Lambda : 'lambda' ;
  If : 'if' ; 
  Less : '<' ;

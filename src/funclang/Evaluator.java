@@ -5,25 +5,17 @@ import static funclang.Value.*;
 import java.util.List;
 import java.util.ArrayList;
 
-import funclang.AST.AddExp;
-import funclang.AST.Const;
-import funclang.AST.DivExp;
-import funclang.AST.ErrorExp;
-import funclang.AST.MultExp;
-import funclang.AST.Program;
-import funclang.AST.SubExp;
-import funclang.AST.VarExp;
-import funclang.AST.Visitor;
-import funclang.Env.EmptyEnv;
-import funclang.Env.ExtendEnv;
+import funclang.Env.*;
 
 public class Evaluator implements Visitor<Value> {
+	
 	Printer.ExpToStringConverter ts = new Printer.ExpToStringConverter();
+
+	final GlobalEnv global_env = new GlobalEnv(); //New for definelang
 	
 	Value valueOf(Program p) {
-		Env env = new EmptyEnv();
 		// Value of a program in this language is the value of the expression
-		return (Value) p.accept(this, env);
+		return (Value) p.accept(this, global_env);
 	}
 	
 	@Override
@@ -96,6 +88,15 @@ public class Evaluator implements Visitor<Value> {
 			new_env = new ExtendEnv(new_env, names.get(index), values.get(index));
 
 		return (Value) e.body().accept(this, new_env);		
+	}	
+	
+	@Override
+	public Value visit(DefineExp e, Env env) { // New for definelang.
+		String name = e.name();
+		Exp value_exp = e.value_exp();
+		Value value = (Value) value_exp.accept(this, env);
+		env.define(name,value);
+		return new Value.Unit();		
 	}	
 
 	@Override
