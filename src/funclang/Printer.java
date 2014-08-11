@@ -113,7 +113,7 @@ public class Printer {
 		}
 
 		public String visit(AST.EqualExp e, Env env) {
-			String result = "(== ";
+			String result = "(= ";
 			result += e.first_exp().accept(this, env) + " ";
 			result += e.second_exp().accept(this, env);
 			return result + ")";

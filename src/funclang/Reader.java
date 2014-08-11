@@ -247,7 +247,7 @@ public class Reader {
 		 *  Syntax: ( == first_exp second_exp )
 		 */
 		private AST.Exp convertEqualExp(RuleNode node){
-			int index = expect(node,0,"(","==");
+			int index = expect(node,0,"(","=");
 			AST.Exp first_exp = node.getChild(index++).accept(this);
 			AST.Exp second_exp = node.getChild(index++).accept(this);
 			expect(node,index++, ")");

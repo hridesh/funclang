@@ -122,7 +122,7 @@ grammar FuncLang;
  Lambda : 'lambda' ;
  If : 'if' ; 
  Less : '<' ;
- Equal : '==' ;
+ Equal : '=' ;
  Greater : '>' ;
  
  // Lexical Specification of this Programming Language
