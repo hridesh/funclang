@@ -69,6 +69,12 @@ public interface Env {
 			return _saved_env.get(search_var);
 		}
 		public synchronized void define(String saved_var, Value saved_val) {
+			for(Binding binding : _bindings) {
+				if (saved_var.equals(binding._var)) {
+					binding._val = saved_val;
+					return;
+				}
+			}
 			_bindings.add( new Binding(saved_var, saved_val));
 		}
 		private class Binding {
