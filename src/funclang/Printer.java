@@ -12,7 +12,7 @@ public class Printer {
 		System.out.println(e.toString());
 	}
 	
-	public static class ExpToStringConverter implements AST.Visitor<String> {
+	public static class Formatter implements AST.Visitor<String> {
 		
 		public String visit(AST.AddExp e, Env env) {
 			String result = "(+ ";

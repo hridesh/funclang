@@ -23,7 +23,7 @@ public interface Value {
 			for(String formal : _formals) 
 				result += formal + " ";
 			result += ") ";
-			result += _body.accept(new Printer.ExpToStringConverter(), _env);
+			result += _body.accept(new Printer.Formatter(), _env);
 			return result + ")";
 	    }
 	}
