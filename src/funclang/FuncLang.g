@@ -41,7 +41,7 @@ grammar FuncLang;
  subexp :  
  		'(' '-' 
  		    exp 
- 		    exp 
+ 		    (exp)+ 
  		    ')' 
  		;
 
@@ -55,7 +55,7 @@ grammar FuncLang;
  divexp  : 
  		'(' '/' 
  		    exp 
- 		    exp 
+ 		    (exp)+ 
  		    ')' 
  		;
 
