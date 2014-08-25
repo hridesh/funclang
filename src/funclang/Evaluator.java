@@ -38,8 +38,12 @@ public class Evaluator implements Visitor<Value> {
 	public Value visit(DivExp e, Env env) {
 		List<Exp> operands = e.all();
 		Int lVal = (Int) operands.get(0).accept(this, env);
-		Int rVal = (Int) operands.get(1).accept(this, env);
-		return new Int(lVal.v() / rVal.v());
+		int result = lVal.v(); 
+		for(int i=1; i<operands.size(); i++) {
+			Int rVal = (Int) operands.get(i).accept(this, env);
+			result = result / rVal.v();
+		}
+		return new Int(result);
 	}
 
 	@Override
@@ -50,9 +54,12 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(MultExp e, Env env) {
 		List<Exp> operands = e.all();
-		Int lVal = (Int) operands.get(0).accept(this, env);
-		Int rVal = (Int) operands.get(1).accept(this, env);
-		return new Int(lVal.v() * rVal.v());
+		int result = 1;
+		for(Exp exp: operands) {
+			Int intermediate = (Int) exp.accept(this, env); // Dynamic type-checking
+			result *= intermediate.v(); //Semantics of MultExp.
+		}
+		return new Int(result);
 	}
 
 	@Override
@@ -64,8 +71,12 @@ public class Evaluator implements Visitor<Value> {
 	public Value visit(SubExp e, Env env) {
 		List<Exp> operands = e.all();
 		Int lVal = (Int) operands.get(0).accept(this, env);
-		Int rVal = (Int) operands.get(1).accept(this, env);
-		return new Int(lVal.v() - rVal.v());
+		int result = lVal.v();
+		for(int i=1; i<operands.size(); i++) {
+			Int rVal = (Int) operands.get(i).accept(this, env);
+			result = result - rVal.v();
+		}
+		return new Int(result);
 	}
 
 	@Override
