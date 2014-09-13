@@ -25,9 +25,9 @@ public class Reader {
 	//Convention: New rules are always added at the end of the file. 
 	private static final String startRule = "program";
 	private static final int 
-		program = 0, exp = 1, varexp = 2, numexp = 3,
-		addexp = 4, subexp = 5, multexp = 6, divexp = 7,
-		letexp = 8, defineexp = 9, // New expression for the varlang language.
+		program = 0, definedecl = 1, exp = 2, varexp = 3, numexp = 4,
+		addexp = 5, subexp = 6, multexp = 7, divexp = 8,
+		letexp = 9, // New expression for the varlang language.
 		lambdaexp = 10, callexp = 11, // New expressions for this language.
 		ifexp = 12, lessexp = 13, equalexp = 14, greaterexp = 15 // Other expressions for convenience.
 		;
@@ -54,10 +54,20 @@ public class Reader {
 	
 	private Program convertParseTreeToAST(ParserInterpreter parser, ParseTree parseTree) {
 		// We know that top-level parse tree node is a program, and for this 
-		// language it contains a single expression, so we just convert the 
+		// language it contains an list of zero or more declarations followed by 
+		// a single expression, so we first extract the declarations and then convert the 
 		// enclosing expression's parse tree to the AST used by this interpreter.
-		Exp exp = parseTree.getChild(0).accept(new TreeToExpConverter(parser));
-		return new Program(exp);
+		int numDecls = parseTree.getChildCount() - 1;		
+		List<DefineDecl> definedecls = new ArrayList<DefineDecl>();
+		TreeToExpConverter convertor = new TreeToExpConverter(parser);
+		for(int i=0; i < numDecls ; i++) 
+			definedecls.add((DefineDecl) parseTree.getChild(i).accept(convertor));
+		Exp exp = parseTree.getChild(numDecls).accept(new TreeToExpConverter(parser));
+		if(exp instanceof DefineDecl) {
+			definedecls.add((DefineDecl) exp);
+			return new Program(definedecls, new Const(0));
+		} 
+		return new Program(definedecls, exp);
 	}
 	
 	private static final LexerGrammar lg = createLexicalGrammar();
@@ -142,7 +152,7 @@ public class Reader {
 				case multexp: return convertMultExp(node);
 				case divexp: return convertDivExp(node);
 				case letexp: return convertLetExp(node);
-				case defineexp: return convertDefineExp(node);
+				case definedecl: return convertDefineDecl(node);
 				case lambdaexp: return convertLambdaExp(node);
 				case callexp: return convertCallExp(node);
 				case ifexp: return convertIfExp(node);
@@ -253,12 +263,12 @@ public class Reader {
 		/**
 		 *  Syntax: (define name value_exp)
 		 */  
-		private AST.Exp convertDefineExp(RuleNode node){
+		private AST.Exp convertDefineDecl(RuleNode node){
 			int index = expect(node,0,"(", "define");
 			String name = expectString(node, index++, 1)[0];
 			AST.Exp value_exp = expectExp(node, index++, 1)[0];
 			expect(node,index++, ")");
-			return new AST.DefineExp(name,value_exp);
+			return new AST.DefineDecl(name,value_exp);
 		}
 		
 		/**

@@ -3,6 +3,7 @@ package funclang;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * This class hierarchy represents expressions in the abstract syntax tree
  * manipulated by this interpreter.
@@ -16,14 +17,20 @@ public interface AST {
 		public abstract Object accept(Visitor visitor, Env env);
 	}
 	public static class Program extends ASTNode {
+		List<DefineDecl> _decls;
 		Exp _e;
 
-		public Program(Exp e) {
+		public Program(List<DefineDecl>decls, Exp e) {
+			_decls = decls;
 			_e = e;
 		}
 
 		public Exp e() {
 			return _e;
+		}
+		
+		public List<DefineDecl> decls() {
+			return _decls;
 		}
 		
 		public Object accept(Visitor visitor, Env env) {
@@ -235,18 +242,18 @@ public interface AST {
 	}
 	
 	/**
-	 * A define expression has the syntax 
+	 * A define declaration has the syntax 
 	 * 
 	 *  (define name expression)
 	 *  
 	 * @author hridesh
 	 *
 	 */
-	public static class DefineExp extends Exp {
-		private String _name;
-		private Exp _value_exp; 
+	public static class DefineDecl extends Exp {
+		String _name;
+		Exp _value_exp; 
 		
-		public DefineExp(String name, Exp value_exp) {
+		public DefineDecl(String name, Exp value_exp) {
 			_name = name;
 			_value_exp = value_exp;
 		}
@@ -419,7 +426,7 @@ public interface AST {
 		public T visit(AST.SubExp e, Env env);
 		public T visit(AST.VarExp e, Env env);
 		public T visit(AST.LetExp e, Env env); // New for the varlang
-		public T visit(AST.DefineExp e, Env env); // New for the definelang
+		public T visit(AST.DefineDecl d, Env env); // New for the definelang
 		public T visit(AST.LambdaExp e, Env env); // New for the funclang
 		public T visit(AST.CallExp e, Env env); // New for the funclang
 		public T visit(AST.IfExp e, Env env); // Additional expressions for convenience

@@ -3,8 +3,15 @@ grammar FuncLang;
  // Grammar of this Programming Language
  //  - grammar rules start with lowercase
  program : 
-		exp
+		(definedecl)* (exp)? //Zero or more define declarations followed by an optional expression.
 		;
+
+ definedecl  :               //New for definelang 
+ 		'(' Define 
+ 			Identifier
+ 			exp
+ 			')' 
+ 		;
 
  exp : 
 		varexp 
@@ -14,7 +21,6 @@ grammar FuncLang;
         | multexp 
         | divexp
         | letexp
-        | defineexp //New for definelang
         | lambdaexp //New for funclang
         | callexp //New for funclang
         | ifexp //New for funclang
@@ -63,13 +69,6 @@ grammar FuncLang;
  		'(' Let 
  			'(' ( '(' Identifier exp ')' )+  ')'
  			exp 
- 			')' 
- 		;
-
- defineexp  :
- 		'(' Define 
- 			Identifier
- 			exp
  			')' 
  		;
 

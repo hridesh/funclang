@@ -11,11 +11,10 @@ public class Evaluator implements Visitor<Value> {
 	
 	Printer.Formatter ts = new Printer.Formatter();
 
-	final GlobalEnv global_env = new GlobalEnv(); //New for definelang
+	Env initEnv = new EmptyEnv(); //New for definelang
 	
 	Value valueOf(Program p) {
-		// Value of a program in this language is the value of the expression
-		return (Value) p.accept(this, global_env);
+		return (Value) p.accept(this, initEnv);
 	}
 	
 	@Override
@@ -64,7 +63,9 @@ public class Evaluator implements Visitor<Value> {
 
 	@Override
 	public Value visit(Program p, Env env) {
-		return (Value) p.e().accept(this, env);
+		for(DefineDecl d: p.decls())
+			d.accept(this, initEnv);
+		return (Value) p.e().accept(this, initEnv);
 	}
 
 	@Override
@@ -102,11 +103,11 @@ public class Evaluator implements Visitor<Value> {
 	}	
 	
 	@Override
-	public Value visit(DefineExp e, Env env) { // New for definelang.
+	public Value visit(DefineDecl e, Env env) { // New for definelang.
 		String name = e.name();
 		Exp value_exp = e.value_exp();
 		Value value = (Value) value_exp.accept(this, env);
-		env.define(name,value);
+		initEnv = new ExtendEnv(initEnv, name, value);
 		return new Value.Unit();		
 	}	
 
