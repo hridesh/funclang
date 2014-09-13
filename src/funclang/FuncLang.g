@@ -154,7 +154,7 @@ grammar FuncLang;
 	|   [\uD800-\uDBFF] [\uDC00-\uDFFF] 
 		{Character.isJavaIdentifierStart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}? ;
 
- LetterOrDigit: [a-zA-Z0-9$_]
+ LetterOrDigit: [a-zA-Z0-9$_?]
 	|   ~[\u0000-\u00FF\uD800-\uDBFF] 
 		{Character.isJavaIdentifierPart(_input.LA(-1))}?
 	|    [\uD800-\uDBFF] [\uDC00-\uDFFF] 
