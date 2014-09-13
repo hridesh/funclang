@@ -101,7 +101,7 @@ public class Printer {
 			String result = "(if ";
 			result += e.conditional().accept(this, env) + " ";
 			result += e.then_exp().accept(this, env) + " ";
-			result += e.then_exp().accept(this, env);
+			result += e.else_exp().accept(this, env);
 			return result + ")";
 		}
 		

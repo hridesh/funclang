@@ -133,12 +133,29 @@ public class Evaluator implements Visitor<Value> {
 		if (formals.size()!=actuals.size())
 			return new Value.DynamicError("Argument mismatch in call " + ts.visit(e, env));
 
-		Env body_env = operator.env();
+		Env closure_env = operator.env();
+		Env fun_env = appendEnv(closure_env, initEnv);
 		for (int index = 0; index < formals.size(); index++)
-			body_env = new ExtendEnv(body_env, formals.get(index), actuals.get(index));
+			fun_env = new ExtendEnv(fun_env, formals.get(index), actuals.get(index));
 		
-		return (Value) operator.body().accept(this, body_env);
+		return (Value) operator.body().accept(this, fun_env);
 	}
+	
+	/* Helper for CallExp */
+	/***
+	 * Create an env that has bindings from fst appended to bindings from snd.
+	 * The order in which 
+	 * @param fst
+	 * @param snd
+	 * @return
+	 */
+	private Env appendEnv(Env fst, Env snd){
+		if(fst.isEmpty())
+			return snd;
+		ExtendEnv f = (ExtendEnv) fst;
+		return new ExtendEnv(appendEnv(f.saved_env(),snd), f.var(), f.val());
+	}
+	/* End: helper for CallExp */
 	
 	@Override
 	public Value visit(IfExp e, Env env) { // New for funclang.

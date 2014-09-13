@@ -74,14 +74,14 @@ grammar FuncLang;
 
  lambdaexp :
  		'(' Lambda 
- 			'(' Identifier+ ')'
+ 			'(' Identifier* ')'
  			exp 
  			')' 
  		;
 
  callexp :
  		'(' exp 
- 			exp+ 
+ 			exp* 
  			')' 
  		;
 
