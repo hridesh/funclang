@@ -5,9 +5,9 @@
 	(lambda ()
 		(lambda (op)
 			(if 
-				(= op 0)  1                //op value 0, null? - Yes
+				(= op 0)  #t                //op value 0, null? - Yes
 				(if 
-					(= op 1) 0             //op value 1, pair? - No
+					(= op 1) #f             //op value 1, pair? - No
 					undefined              //other operators are undefined.
 				)
 			)
@@ -19,9 +19,9 @@
 	(lambda (fst snd)
 		(lambda (op)
 			(if 
-				(= op 0)  0                //op value 0, null? - No
+				(= op 0)  #f                //op value 0, null? - No
 				(if 
-					(= op 1) 1             //op value 1, pair? - Yes
+					(= op 1) #t             //op value 1, pair? - Yes
 					(if 
 						(= op 2) fst       //op value 2, car 
 						(if 
@@ -35,15 +35,15 @@
 	)
 )
 
-(define isnull
+(define null?
 	(lambda (obj)
-		(= (obj 0) 1)
+		(obj 0)
 	)
 )
 
-(define ispair
+(define pair?
 	(lambda (obj)
-		(= (obj 1) 1)
+		(obj 1)
 	)
 )
 
@@ -63,6 +63,18 @@
 	)
 )
 
+(define cadr
+	(lambda (lst)
+		(car (cdr lst))
+	)
+)
+
+(define caddr
+	(lambda (lst)
+		(car (cdr (cdr lst)))
+	)
+)
+
 (define length
 	(lambda (lst)
 		(if (isnull lst) 0
@@ -77,6 +89,14 @@
 			(if (isnull lst2) lst1
 				(cons (car lst1) (append (cdr lst1) lst2))
 			)
+		)		
+	)
+)
+
+(define map
+	(lambda (op lst)
+		(if (isnull lst) (null)
+			(cons (op (car lst)) (map (cdr lst)))
 		)		
 	)
 )
