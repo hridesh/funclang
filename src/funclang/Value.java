@@ -39,6 +39,12 @@ public interface Value {
 	    public boolean v() { return _val; }
 	    public String tostring() { return "" + _val; }
 	}
+	static class Str implements Value {
+		private java.lang.String _val;
+	    public Str(String v) { _val = v; } 
+	    public String v() { return _val; }
+	    public java.lang.String tostring() { return "" + _val; }
+	}
 	static class Unit implements Value {
 		public static final Unit v = new Unit();
 	    public String tostring() { return "unit"; }
