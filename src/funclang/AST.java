@@ -73,6 +73,22 @@ public interface AST {
 		}
 	}
 
+	public static class StrConst extends Exp {
+		String _val;
+
+		public StrConst(String v) {
+			_val = v;
+		}
+
+		public String v() {
+			return _val;
+		}
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
 	public static abstract class CompoundArithExp extends Exp {
 		List<Exp> _rest;
 
@@ -409,6 +425,38 @@ public interface AST {
 		}
 	}
 
+	/**
+	 * Eval expression: evaluate the program that is _val
+	 * @author hridesh
+	 *
+	 */
+	public static class EvalExp extends Exp {
+		private Exp _code; 
+		public EvalExp(Exp code){
+			_code = code;
+		}
+		public Exp code() { return _code; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	/**
+	 * Read expression: reads the file that is _file
+	 * @author hridesh
+	 *
+	 */
+	public static class ReadExp extends Exp {
+		private Exp _file; 
+		public ReadExp(Exp file){
+			_file = file;
+		}
+		public Exp file() { return _file; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
 	public static class ErrorExp extends Exp {
 		public Object accept(Visitor visitor, Env env) {
 			return visitor.visit(this, env);
@@ -419,6 +467,7 @@ public interface AST {
 		// This interface should contain a signature for each concrete AST node.
 		public T visit(AST.AddExp e, Env env);
 		public T visit(AST.Const e, Env env);
+		public T visit(AST.StrConst e, Env env);
 		public T visit(AST.DivExp e, Env env);
 		public T visit(AST.ErrorExp e, Env env);
 		public T visit(AST.MultExp e, Env env);
@@ -427,6 +476,8 @@ public interface AST {
 		public T visit(AST.VarExp e, Env env);
 		public T visit(AST.LetExp e, Env env); // New for the varlang
 		public T visit(AST.DefineDecl d, Env env); // New for the definelang
+		public T visit(AST.ReadExp e, Env env); // New for the funclang
+		public T visit(AST.EvalExp e, Env env); // New for the funclang
 		public T visit(AST.LambdaExp e, Env env); // New for the funclang
 		public T visit(AST.CallExp e, Env env); // New for the funclang
 		public T visit(AST.IfExp e, Env env); // Additional expressions for convenience

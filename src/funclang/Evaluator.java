@@ -4,6 +4,7 @@ import static funclang.Value.*;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.io.File;
 
 import funclang.Env.*;
 
@@ -11,7 +12,7 @@ public class Evaluator implements Visitor<Value> {
 	
 	Printer.Formatter ts = new Printer.Formatter();
 
-	Env initEnv = new EmptyEnv(); //New for definelang
+	Env initEnv = initialEnv(); //New for definelang
 	
 	Value valueOf(Program p) {
 		return (Value) p.accept(this, initEnv);
@@ -31,6 +32,11 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(Const e, Env env) {
 		return new Int(e.v());
+	}
+
+	@Override
+	public Value visit(StrConst e, Env env) {
+		return new Str(e.v());
 	}
 
 	@Override
@@ -190,4 +196,42 @@ public class Evaluator implements Visitor<Value> {
 		return new Value.Bool(first.v() > second.v());
 	}
 	
+	public Value visit(EvalExp e, Env env) {
+		Str programText = (Str) e.code().accept(this, env);
+		Program p = _reader.parse(programText.v());
+		return (Value) p.accept(this, env);
+	}
+
+	public Value visit(ReadExp e, Env env) {
+		Str fileName = (Str) e.file().accept(this, env);
+		String text = Reader.readFile("" + System.getProperty("user.dir") + File.separator + fileName.v());
+		return new Str(text);
+	}
+
+	private Env initialEnv() {
+		Env initEnv = new EmptyEnv();
+		
+		/* Procedure: (read <filename>). Following is same as (define read (lambda (file) (read file))) */
+		List<String> formals = new ArrayList<>();
+		formals.add("file");
+		Exp body = new AST.ReadExp(new VarExp("file"));
+		Value.Fun readFun = new Value.Fun(initEnv, formals, body);
+		initEnv = new Env.ExtendEnv(initEnv, "read", readFun);
+
+		/* Procedure: (require <filename>). Following is same as (define require (lambda (file) (eval (read file)))) */
+		formals = new ArrayList<>();
+		formals.add("file");
+		body = new EvalExp(new AST.ReadExp(new VarExp("file")));
+		Value.Fun requireFun = new Value.Fun(initEnv, formals, body);
+		initEnv = new Env.ExtendEnv(initEnv, "require", requireFun);
+		
+		/* Add new built-in procedures here */ 
+		
+		return initEnv;
+	}
+	
+	Reader _reader; 
+	public Evaluator(Reader reader) {
+		_reader = reader;
+	}
 }

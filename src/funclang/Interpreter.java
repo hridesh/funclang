@@ -16,7 +16,7 @@ public class Interpreter {
 							" e.g. ((lambda (av bv cv) (let ((a av) (b bv) (c cv) (d 279) (e 277)) (+ (* a b) (/ c (- d e))))) 3 100 84) \n" + 
 							"Press Ctrl + C to exit.");
 		Reader reader = new Reader();
-		Evaluator eval = new Evaluator();
+		Evaluator eval = new Evaluator(reader);
 		Printer printer = new Printer();
 		try {
 			while (true) { // Read-Eval-Print-Loop (also known as REPL)

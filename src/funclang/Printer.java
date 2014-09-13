@@ -25,6 +25,10 @@ public class Printer {
 			return "" + e.v();
 		}
 		
+		public String visit(AST.StrConst e, Env env) {
+			return e.v();
+		}
+		
 		public String visit(AST.DivExp e, Env env) {
 			String result = "(/ ";
 			for(AST.Exp exp : e.all()) 
@@ -36,6 +40,14 @@ public class Printer {
 			return e.toString();
 		}
 		
+		public String visit(AST.ReadExp e, Env env) {
+			return "(read " + e.file().accept(this, env) + ")";
+		}
+
+		public String visit(AST.EvalExp e, Env env) {
+			return "(eval " + e.code().accept(this, env) + ")";
+		}
+
 		public String visit(AST.MultExp e, Env env) {
 			String result = "(* ";
 			for(AST.Exp exp : e.all()) 

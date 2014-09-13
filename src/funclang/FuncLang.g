@@ -16,6 +16,7 @@ grammar FuncLang;
  exp : 
 		varexp 
 		| numexp 
+		| strconst
         | addexp 
         | subexp 
         | multexp 
@@ -35,6 +36,10 @@ grammar FuncLang;
  
  numexp :
  		Number 
+ 		;
+
+ strconst :
+ 		StrLiteral
  		;
   
  addexp :
@@ -149,6 +154,9 @@ grammar FuncLang;
 
  fragment DIGIT: ('0'..'9');
  fragment DIGIT_NOT_ZERO: ('1'..'9');
+
+ fragment ESCQUOTE : '\\"';
+ StrLiteral :   '"' ( ESCQUOTE | ~('\n'|'\r') )*? '"';
 
  AT : '@';
  ELLIPSIS : '...';
