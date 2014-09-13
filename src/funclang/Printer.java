@@ -29,6 +29,11 @@ public class Printer {
 			return e.v();
 		}
 		
+		public String visit(AST.BoolConst e, Env env) {
+			if(e.v()) return "#t";
+			return "#f";
+		}
+
 		public String visit(AST.DivExp e, Env env) {
 			String result = "(/ ";
 			for(AST.Exp exp : e.all()) 

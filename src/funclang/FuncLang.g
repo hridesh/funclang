@@ -17,6 +17,7 @@ grammar FuncLang;
 		varexp 
 		| numexp 
 		| strconst
+		| boolconst
         | addexp 
         | subexp 
         | multexp 
@@ -40,6 +41,11 @@ grammar FuncLang;
 
  strconst :
  		StrLiteral
+ 		;
+
+ boolconst :
+ 		TrueLiteral
+ 		| FalseLiteral
  		;
   
  addexp :
@@ -128,6 +134,8 @@ grammar FuncLang;
  Less : '<' ;
  Equal : '=' ;
  Greater : '>' ;
+ TrueLiteral : '#t' ;
+ FalseLiteral : '#f' ;
  
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase

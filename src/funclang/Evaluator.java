@@ -40,6 +40,11 @@ public class Evaluator implements Visitor<Value> {
 	}
 
 	@Override
+	public Value visit(BoolConst e, Env env) {
+		return new Bool(e.v());
+	}
+
+	@Override
 	public Value visit(DivExp e, Env env) {
 		List<Exp> operands = e.all();
 		Int lVal = (Int) operands.get(0).accept(this, env);

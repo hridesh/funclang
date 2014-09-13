@@ -89,6 +89,22 @@ public interface AST {
 		}
 	}
 
+	public static class BoolConst extends Exp {
+		boolean _val;
+
+		public BoolConst(boolean v) {
+			_val = v;
+		}
+
+		public boolean v() {
+			return _val;
+		}
+		
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
 	public static abstract class CompoundArithExp extends Exp {
 		List<Exp> _rest;
 
@@ -468,6 +484,7 @@ public interface AST {
 		public T visit(AST.AddExp e, Env env);
 		public T visit(AST.Const e, Env env);
 		public T visit(AST.StrConst e, Env env);
+		public T visit(AST.BoolConst e, Env env);
 		public T visit(AST.DivExp e, Env env);
 		public T visit(AST.ErrorExp e, Env env);
 		public T visit(AST.MultExp e, Env env);

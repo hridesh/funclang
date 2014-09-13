@@ -37,7 +37,7 @@ public interface Value {
 		private boolean _val;
 	    public Bool(boolean v) { _val = v; } 
 	    public boolean v() { return _val; }
-	    public String tostring() { return "" + _val; }
+	    public String tostring() { if(_val) return "#t"; return "#f"; }
 	}
 	static class Str implements Value {
 		private java.lang.String _val;

@@ -26,10 +26,10 @@ public class Reader {
 	private static final String startRule = "program";
 	private static final int 
 		program = 0, definedecl = 1, exp = 2, varexp = 3, numexp = 4, strconst = 5,
-		addexp = 6, subexp = 7, multexp = 8, divexp = 9,
-		letexp = 10, // New expression for the varlang language.
-		lambdaexp = 11, callexp = 12, // New expressions for this language.
-		ifexp = 13, lessexp = 14, equalexp = 15, greaterexp = 16 // Other expressions for convenience.
+		boolconst = 6, addexp = 7, subexp = 8, multexp = 9, divexp = 10,
+		letexp = 11, // New expression for the varlang language.
+		lambdaexp = 12, callexp = 13, // New expressions for this language.
+		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17 // Other expressions for convenience.
 		;
 
 	private static final boolean DEBUG = false;
@@ -148,6 +148,7 @@ public class Reader {
 				case varexp: return convertVarExp(node);
 				case numexp: return convertConst(node);
 				case strconst: return convertStrConst(node);
+				case boolconst: return convertBoolConst(node);
 				case addexp: return convertAddExp(node); 
 				case subexp: return convertSubExp(node); 
 				case multexp: return convertMultExp(node);
@@ -194,12 +195,22 @@ public class Reader {
 		}
 		
 		/**
-		 *  Syntax: Number
+		 *  Syntax: "a string"
 		 */  
 		private AST.StrConst convertStrConst(RuleNode node){
 			String s = node.getChild(0).toStringTree(parser);
 			s = s.substring(1, s.length()-1); //Trim to remove quotes.
 			return new AST.StrConst(s);
+		}
+
+		/**
+		 *  Syntax: #t or #f
+		 */  
+		private AST.BoolConst convertBoolConst(RuleNode node){
+			String s = node.getChild(0).toStringTree(parser);
+			if(s.equals("#t"))
+				return new AST.BoolConst(true);
+			return new AST.BoolConst(false);
 		}
 
 		/**
