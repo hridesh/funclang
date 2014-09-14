@@ -185,13 +185,18 @@ public class Reader {
 		 *  Syntax: Number
 		 */  
 		private AST.Const convertConst(RuleNode node){
-			String s = node.getChild(0).toStringTree(parser);
 			try {
-				int v = Integer.parseInt(s);
+				String s = node.getChild(0).toStringTree(parser);
+				if(node.getChildCount() > 2) {
+					s+=node.getChild(1).toStringTree(parser);
+					s+=node.getChild(2).toStringTree(parser);
+				}
+				double v = Double.parseDouble(s);
 				return new AST.Const(v);
-			} catch (NumberFormatException e) {}
-			throw new ConversionException("Conversion error: " + node.toStringTree(parser) + ", " + 
-					"expected Number, found " + node.getChild(0).toStringTree(parser));
+			} catch (NumberFormatException e) {
+				throw new ConversionException("Conversion error: " + node.toStringTree(parser) + ", " + 
+						"expected Number, found " + node.getChild(0).toStringTree(parser));
+			}
 		}
 		
 		/**

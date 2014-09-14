@@ -23,15 +23,15 @@ public class Evaluator implements Visitor<Value> {
 		List<Exp> operands = e.all();
 		int result = 0;
 		for(Exp exp: operands) {
-			Int intermediate = (Int) exp.accept(this, env); // Dynamic type-checking
+			Num intermediate = (Num) exp.accept(this, env); // Dynamic type-checking
 			result += intermediate.v(); //Semantics of AddExp in terms of the target language.
 		}
-		return new Int(result);
+		return new Num(result);
 	}
 
 	@Override
 	public Value visit(Const e, Env env) {
-		return new Int(e.v());
+		return new Num(e.v());
 	}
 
 	@Override
@@ -47,13 +47,13 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(DivExp e, Env env) {
 		List<Exp> operands = e.all();
-		Int lVal = (Int) operands.get(0).accept(this, env);
-		int result = lVal.v(); 
+		Num lVal = (Num) operands.get(0).accept(this, env);
+		double result = lVal.v(); 
 		for(int i=1; i<operands.size(); i++) {
-			Int rVal = (Int) operands.get(i).accept(this, env);
+			Num rVal = (Num) operands.get(i).accept(this, env);
 			result = result / rVal.v();
 		}
-		return new Int(result);
+		return new Num(result);
 	}
 
 	@Override
@@ -66,10 +66,10 @@ public class Evaluator implements Visitor<Value> {
 		List<Exp> operands = e.all();
 		int result = 1;
 		for(Exp exp: operands) {
-			Int intermediate = (Int) exp.accept(this, env); // Dynamic type-checking
+			Num intermediate = (Num) exp.accept(this, env); // Dynamic type-checking
 			result *= intermediate.v(); //Semantics of MultExp.
 		}
-		return new Int(result);
+		return new Num(result);
 	}
 
 	@Override
@@ -82,13 +82,13 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(SubExp e, Env env) {
 		List<Exp> operands = e.all();
-		Int lVal = (Int) operands.get(0).accept(this, env);
-		int result = lVal.v();
+		Num lVal = (Num) operands.get(0).accept(this, env);
+		double result = lVal.v();
 		for(int i=1; i<operands.size(); i++) {
-			Int rVal = (Int) operands.get(i).accept(this, env);
+			Num rVal = (Num) operands.get(i).accept(this, env);
 			result = result - rVal.v();
 		}
-		return new Int(result);
+		return new Num(result);
 	}
 
 	@Override
@@ -182,22 +182,22 @@ public class Evaluator implements Visitor<Value> {
 
 	@Override
 	public Value visit(LessExp e, Env env) { // New for funclang.
-		Value.Int first = (Value.Int) e.first_exp().accept(this, env);
-		Value.Int second = (Value.Int) e.second_exp().accept(this, env);
+		Value.Num first = (Value.Num) e.first_exp().accept(this, env);
+		Value.Num second = (Value.Num) e.second_exp().accept(this, env);
 		return new Value.Bool(first.v() < second.v());
 	}
 	
 	@Override
 	public Value visit(EqualExp e, Env env) { // New for funclang.
-		Value.Int first = (Value.Int) e.first_exp().accept(this, env);
-		Value.Int second = (Value.Int) e.second_exp().accept(this, env);
+		Value.Num first = (Value.Num) e.first_exp().accept(this, env);
+		Value.Num second = (Value.Num) e.second_exp().accept(this, env);
 		return new Value.Bool(first.v() == second.v());
 	}
 
 	@Override
 	public Value visit(GreaterExp e, Env env) { // New for funclang.
-		Value.Int first = (Value.Int) e.first_exp().accept(this, env);
-		Value.Int second = (Value.Int) e.second_exp().accept(this, env);
+		Value.Num first = (Value.Num) e.first_exp().accept(this, env);
+		Value.Num second = (Value.Num) e.second_exp().accept(this, env);
 		return new Value.Bool(first.v() > second.v());
 	}
 	

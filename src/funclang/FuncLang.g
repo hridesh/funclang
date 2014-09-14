@@ -36,7 +36,8 @@ grammar FuncLang;
  		;
  
  numexp :
- 		Number 
+ 		Number
+ 		| Number Dot Number
  		;
 
  strconst :
@@ -136,16 +137,15 @@ grammar FuncLang;
  Greater : '>' ;
  TrueLiteral : '#t' ;
  FalseLiteral : '#f' ;
+ Dot : '.' ;
  
  // Lexical Specification of this Programming Language
  //  - lexical specification rules start with uppercase
 
  Identifier :   Letter LetterOrDigit*;
  	
- Number : 
-	DIGIT 
-	| (DIGIT_NOT_ZERO DIGIT+); 
-
+ Number : DIGIT+ ;
+ 
 // Identifier :   Letter LetterOrDigit*;
 
  Letter :   [a-zA-Z$_]

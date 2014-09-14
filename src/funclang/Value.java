@@ -27,11 +27,15 @@ public interface Value {
 			return result + ")";
 	    }
 	}
-	static class Int implements Value {
-	    private int _val;
-	    public Int(int v) { _val = v; } 
-	    public int v() { return _val; }
-	    public String tostring() { return "" + _val; }
+	static class Num implements Value {
+	    private double _val;
+	    public Num(double v) { _val = v; } 
+	    public double v() { return _val; }
+	    public String tostring() { 
+	    	int tmp = (int) _val;
+	    	if(tmp == _val) return "" + tmp;
+	    	return "" + _val; 
+	    }
 	}
 	static class Bool implements Value {
 		private boolean _val;
