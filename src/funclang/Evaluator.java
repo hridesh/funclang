@@ -64,7 +64,7 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(MultExp e, Env env) {
 		List<Exp> operands = e.all();
-		int result = 1;
+		double result = 1;
 		for(Exp exp: operands) {
 			Num intermediate = (Num) exp.accept(this, env); // Dynamic type-checking
 			result *= intermediate.v(); //Semantics of MultExp.
