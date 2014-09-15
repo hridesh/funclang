@@ -228,6 +228,14 @@ public class Evaluator implements Visitor<Value> {
 	public Value visit(ConsExp e, Env env) { 
 		Value first = (Value) e.fst().accept(this, env);
 		Value second = (Value) e.snd().accept(this, env);
+		//Special case for list: cdr of a list is a list also.
+		if(second instanceof Value.EmptyList) 
+			return new Value.ExtendList(first, second);
+		else if(second instanceof Value.ExtendList) {
+			ExtendList rest = (Value.ExtendList) second;
+			PairVal newSecond = new PairVal(rest.fst(), rest.snd());
+			return new ExtendList(first, newSecond);
+		}
 		return new Value.PairVal(first, second);
 	}
 
