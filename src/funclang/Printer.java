@@ -147,5 +147,32 @@ public class Printer {
 			result += e.second_exp().accept(this, env);
 			return result + ")";
 		}
+		
+		public String visit(AST.CarExp e, Env env) {
+			String result = "car ";
+			result += e.arg().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.CdrExp e, Env env) {
+			String result = "cdr ";
+			result += e.arg().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.ConsExp e, Env env) {
+			String result = "(cons ";
+			result += e.fst().accept(this, env) + " ";
+			result += e.snd().accept(this, env);
+			return result + ")";
+		}
+		
+		public String visit(AST.ListExp e, Env env) {
+			String result = "(list ";
+			for(AST.Exp exp : e.elems())
+				result += exp.accept(this, env) + " ";
+			return result + ")";
+		}
+		
 	}
 }

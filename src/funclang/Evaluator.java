@@ -206,6 +206,53 @@ public class Evaluator implements Visitor<Value> {
 		return new Value.BoolVal(first.v() > second.v());
 	}
 	
+	@Override
+	public Value visit(CarExp e, Env env) { 
+		Value.PairVal pair = (Value.PairVal) e.arg().accept(this, env);
+		return pair.fst();
+	}
+	
+	@Override
+	public Value visit(CdrExp e, Env env) { 
+		Value.PairVal pair = (Value.PairVal) e.arg().accept(this, env);
+		Value result = pair.snd();
+		//Special case for list: cdr of a list is a list also.
+		if(pair instanceof Value.ExtendList) {
+			if(result instanceof Value.EmptyList) return result;
+			return new ExtendList(((Value.PairVal)result).fst(),((Value.PairVal)result).snd());
+		}
+		return pair.snd();
+	}
+	
+	@Override
+	public Value visit(ConsExp e, Env env) { 
+		Value first = (Value) e.fst().accept(this, env);
+		Value second = (Value) e.snd().accept(this, env);
+		return new Value.PairVal(first, second);
+	}
+
+	@Override
+	public Value visit(ListExp e, Env env) { // New for funclang.
+		List<Exp> elemExps = e.elems();
+		int length = elemExps.size();
+		if(length == 0)
+			return new Value.EmptyList();
+		
+		List<Value> elems = new ArrayList<Value>(length);
+		for(Exp exp : elemExps) 
+			elems.add((Value) exp.accept(this, env));
+		
+		Value.PairVal list = null;
+		for(int i=length-1; i>0; i--) {
+			if(list == null)
+				list = new PairVal(elems.get(i), new Value.EmptyList());
+			else list = new PairVal(elems.get(i),list);
+		}
+		if(list == null) list = new ExtendList(elems.get(0), new Value.EmptyList());
+		else list = new ExtendList(elems.get(0),list);
+		return list;
+	}
+
 	public Value visit(EvalExp e, Env env) {
 		StringVal programText = (StringVal) e.code().accept(this, env);
 		Program p = _reader.parse(programText.v());

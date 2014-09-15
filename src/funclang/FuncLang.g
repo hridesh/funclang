@@ -29,6 +29,10 @@ grammar FuncLang;
         | lessexp //New for funclang
         | equalexp //New for funclang
         | greaterexp //New for funclang
+        | carexp //New for funclang
+        | cdrexp //New for funclang
+        | consexp //New for funclang
+        | listexp //New for funclang
         ;
  
  varexp  : 
@@ -126,12 +130,41 @@ grammar FuncLang;
  			')' 
  		;
 
+ carexp :
+ 		'(' Car 
+ 		    exp 
+ 			')' 
+ 		;
+
+ cdrexp :
+ 		'(' Cdr 
+ 		    exp 
+ 			')' 
+ 		;
+
+ consexp :
+ 		'(' Cons 
+ 		    exp 
+ 			exp 
+ 			')' 
+ 		;
+
+ listexp :
+ 		'(' List 
+ 		    exp* 
+ 			')' 
+ 		;
+
 // Keywords
 
  Let : 'let' ;
  Define : 'define' ;
  Lambda : 'lambda' ;
  If : 'if' ; 
+ Car : 'car' ; 
+ Cdr : 'cdr' ; 
+ Cons : 'cons' ; 
+ List : 'list' ; 
  Less : '<' ;
  Equal : '=' ;
  Greater : '>' ;

@@ -49,6 +49,50 @@ public interface Value {
 	    public String v() { return _val; }
 	    public java.lang.String tostring() { return "" + _val; }
 	}
+	static class PairVal implements Value {
+		protected Value _fst;
+		protected Value _snd;
+	    public PairVal(Value fst, Value snd) { _fst = fst; _snd = snd; } 
+		public Value fst() { return _fst; }
+		public Value snd() { return _snd; }
+	    public java.lang.String tostring() { 
+	    	return "(" + _fst.tostring() + " " + _snd.tostring() + ")"; 
+	    }
+	    protected java.lang.String tostringHelper() { 
+	    	String result = "";
+	    	if(_fst instanceof Value.PairVal && !(_fst instanceof Value.ExtendList))
+	    		result += ((Value.PairVal) _fst).tostringHelper();
+	    	else result += _fst.tostring();
+	    	if(!(_snd instanceof Value.EmptyList)){
+	    		result += " ";
+	    		if(_snd instanceof Value.PairVal && !(_snd instanceof Value.ExtendList))
+	    			result += ((Value.PairVal) _snd).tostringHelper();
+	    		else result += _snd.tostring();
+	    	}
+	    	return result;
+	    }
+	}
+	static interface ListVal extends Value {}
+	static class EmptyList implements ListVal {
+		public EmptyList() {}
+	    public String tostring() { return "()"; }
+	}
+	static class ExtendList extends PairVal implements ListVal {
+		public ExtendList(Value fst, Value snd) { super(fst, snd); }		
+	    public String tostring() {
+	    	String result = "(";
+	    	if(_fst instanceof Value.PairVal && !(_fst instanceof Value.ExtendList))
+	    		result += ((Value.PairVal) _fst).tostringHelper();
+	    	else result += _fst.tostring();
+	    	if(!(_snd instanceof Value.EmptyList)){
+	    		result += " ";
+	    		if(_snd instanceof Value.PairVal && !(_snd instanceof Value.ExtendList))
+	    			result += ((Value.PairVal) _snd).tostringHelper();
+	    		else result += _snd.tostring();
+	    	}
+	    	return result += ")";
+	    }
+	}
 	static class UnitVal implements Value {
 		public static final UnitVal v = new UnitVal();
 	    public String tostring() { return ""; }

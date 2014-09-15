@@ -452,6 +452,85 @@ public interface AST {
 	}
 
 	/**
+	 * A car expression has the syntax
+	 * 
+	 * ( car expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class CarExp extends Exp {
+		private Exp _arg; 
+		public CarExp(Exp arg){
+			_arg = arg;
+		}
+		public Exp arg() { return _arg; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+	
+	/**
+	 * A cdr expression has the syntax
+	 * 
+	 * ( car expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class CdrExp extends Exp {
+		private Exp _arg; 
+		public CdrExp(Exp arg){
+			_arg = arg;
+		}
+		public Exp arg() { return _arg; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+	
+	/**
+	 * A cons expression has the syntax
+	 * 
+	 * ( cons expression expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class ConsExp extends Exp {
+		private Exp _fst; 
+		private Exp _snd; 
+		public ConsExp(Exp fst, Exp snd){
+			_fst = fst;
+			_snd = snd;
+		}
+		public Exp fst() { return _fst; }
+		public Exp snd() { return _snd; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	/**
+	 * A list expression has the syntax
+	 * 
+	 * ( list expression* )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class ListExp extends Exp {
+		private List<Exp> _elems; 
+		public ListExp(List<Exp> elems){
+			_elems = elems;
+		}
+		public List<Exp> elems() { return _elems; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	/**
 	 * Eval expression: evaluate the program that is _val
 	 * @author hridesh
 	 *
@@ -512,5 +591,9 @@ public interface AST {
 		public T visit(AST.LessExp e, Env env); // Additional expressions for convenience
 		public T visit(AST.EqualExp e, Env env); // Additional expressions for convenience
 		public T visit(AST.GreaterExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.CarExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.CdrExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.ConsExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.ListExp e, Env env); // Additional expressions for convenience
 	}	
 }

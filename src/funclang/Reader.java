@@ -29,7 +29,8 @@ public class Reader {
 		boolconst = 6, addexp = 7, subexp = 8, multexp = 9, divexp = 10,
 		letexp = 11, // New expression for the varlang language.
 		lambdaexp = 12, callexp = 13, // New expressions for this language.
-		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17 // Other expressions for convenience.
+		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
+		carexp = 18, cdrexp = 19, consexp = 20, listexp = 21
 		;
 
 	private static final boolean DEBUG = false;
@@ -161,6 +162,10 @@ public class Reader {
 				case lessexp: return convertLessExp(node);
 				case equalexp: return convertEqualExp(node);
 				case greaterexp: return convertGreaterExp(node);
+				case carexp: return convertCarExp(node);
+				case cdrexp: return convertCdrExp(node);
+				case consexp: return convertConsExp(node);
+				case listexp: return convertListExp(node);
 				case exp: return visitChildrenHelper(node).get(0);
 				case program: 
 				default: 
@@ -371,6 +376,51 @@ public class Reader {
 			AST.Exp second_exp = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
 			return new AST.GreaterExp(first_exp, second_exp);
+		}
+
+		/**
+		 *  Syntax: ( car exp )
+		 */
+		private AST.Exp convertCarExp(RuleNode node){
+			int index = expect(node,0,"(","car");
+			AST.Exp _exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.CarExp(_exp);
+		}
+		
+		/**
+		 *  Syntax: ( cdr exp )
+		 */
+		private AST.Exp convertCdrExp(RuleNode node){
+			int index = expect(node,0,"(","cdr");
+			AST.Exp _exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.CdrExp(_exp);
+		}
+
+		/**
+		 *  Syntax: ( operator_exp operand_exp* )
+		 */
+		private AST.Exp convertListExp(RuleNode node){
+			int index = expect(node,0,"(", "list");
+			List<AST.Exp> operands = new ArrayList<AST.Exp>();	
+			while (!match(node,index,")")) {
+				AST.Exp operand = node.getChild(index++).accept(this);
+				operands.add(operand);
+			}
+			expect(node,index++, ")");
+			return new AST.ListExp(operands);
+		}
+
+		/**
+		 *  Syntax: ( cons first_exp second_exp )
+		 */
+		private AST.Exp convertConsExp(RuleNode node){
+			int index = expect(node,0,"(","cons");
+			AST.Exp first_exp = node.getChild(index++).accept(this);
+			AST.Exp second_exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.ConsExp(first_exp, second_exp);
 		}
 
 		public AST.Exp visitTerminal(TerminalNode node) {
