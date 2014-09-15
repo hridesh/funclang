@@ -529,6 +529,25 @@ public interface AST {
 			return visitor.visit(this, env);
 		}
 	}
+	
+	/**
+	 * A null expression has the syntax
+	 * 
+	 * ( null? expression )
+	 * 
+	 * @author hridesh
+	 *
+	 */
+	public static class NullExp extends Exp {
+		private Exp _arg; 
+		public NullExp(Exp arg){
+			_arg = arg;
+		}
+		public Exp arg() { return _arg; }
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+	}
 
 	/**
 	 * Eval expression: evaluate the program that is _val
@@ -595,5 +614,6 @@ public interface AST {
 		public T visit(AST.CdrExp e, Env env); // Additional expressions for convenience
 		public T visit(AST.ConsExp e, Env env); // Additional expressions for convenience
 		public T visit(AST.ListExp e, Env env); // Additional expressions for convenience
+		public T visit(AST.NullExp e, Env env); // Additional expressions for convenience
 	}	
 }

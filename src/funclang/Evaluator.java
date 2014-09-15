@@ -252,6 +252,12 @@ public class Evaluator implements Visitor<Value> {
 		else list = new ExtendList(elems.get(0),list);
 		return list;
 	}
+	
+	@Override
+	public Value visit(NullExp e, Env env) {
+		Value val = (Value) e.arg().accept(this, env);
+		return new BoolVal(val instanceof Value.EmptyList);
+	}
 
 	public Value visit(EvalExp e, Env env) {
 		StringVal programText = (StringVal) e.code().accept(this, env);

@@ -33,6 +33,7 @@ grammar FuncLang;
         | cdrexp //New for funclang
         | consexp //New for funclang
         | listexp //New for funclang
+        | nullexp //New for funclang
         ;
  
  varexp  : 
@@ -155,6 +156,12 @@ grammar FuncLang;
  			')' 
  		;
 
+ nullexp :
+ 		'(' Null 
+ 		    exp 
+ 			')' 
+ 		;
+
 // Keywords
 
  Let : 'let' ;
@@ -165,6 +172,7 @@ grammar FuncLang;
  Cdr : 'cdr' ; 
  Cons : 'cons' ; 
  List : 'list' ; 
+ Null : 'null?' ; 
  Less : '<' ;
  Equal : '=' ;
  Greater : '>' ;

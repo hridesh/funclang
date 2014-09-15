@@ -30,7 +30,7 @@ public class Reader {
 		letexp = 11, // New expression for the varlang language.
 		lambdaexp = 12, callexp = 13, // New expressions for this language.
 		ifexp = 14, lessexp = 15, equalexp = 16, greaterexp = 17, // Other expressions for convenience.
-		carexp = 18, cdrexp = 19, consexp = 20, listexp = 21
+		carexp = 18, cdrexp = 19, consexp = 20, listexp = 21, nullexp = 22
 		;
 
 	private static final boolean DEBUG = false;
@@ -166,6 +166,7 @@ public class Reader {
 				case cdrexp: return convertCdrExp(node);
 				case consexp: return convertConsExp(node);
 				case listexp: return convertListExp(node);
+				case nullexp: return convertNullExp(node);
 				case exp: return visitChildrenHelper(node).get(0);
 				case program: 
 				default: 
@@ -421,6 +422,16 @@ public class Reader {
 			AST.Exp second_exp = node.getChild(index++).accept(this);
 			expect(node,index++, ")");
 			return new AST.ConsExp(first_exp, second_exp);
+		}
+
+		/**
+		 *  Syntax: ( car exp )
+		 */
+		private AST.Exp convertNullExp(RuleNode node){
+			int index = expect(node,0,"(","null?");
+			AST.Exp _exp = node.getChild(index++).accept(this);
+			expect(node,index++, ")");
+			return new AST.NullExp(_exp);
 		}
 
 		public AST.Exp visitTerminal(TerminalNode node) {

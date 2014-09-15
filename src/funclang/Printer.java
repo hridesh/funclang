@@ -149,13 +149,13 @@ public class Printer {
 		}
 		
 		public String visit(AST.CarExp e, Env env) {
-			String result = "car ";
+			String result = "(car ";
 			result += e.arg().accept(this, env);
 			return result + ")";
 		}
 		
 		public String visit(AST.CdrExp e, Env env) {
-			String result = "cdr ";
+			String result = "(cdr ";
 			result += e.arg().accept(this, env);
 			return result + ")";
 		}
@@ -171,6 +171,12 @@ public class Printer {
 			String result = "(list ";
 			for(AST.Exp exp : e.elems())
 				result += exp.accept(this, env) + " ";
+			return result + ")";
+		}
+
+		public String visit(AST.NullExp e, Env env) {
+			String result = "(null? ";
+			result += e.arg().accept(this, env);
 			return result + ")";
 		}
 		
