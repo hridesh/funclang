@@ -57,6 +57,16 @@ public interface AST {
 		}
 	}
 
+	public static class Unit extends Exp {
+		
+		public Unit() {}
+
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+
+	}
+
 	public static class Const extends Exp {
 		double _val;
 
@@ -482,6 +492,7 @@ public interface AST {
 	public interface Visitor <T> {
 		// This interface should contain a signature for each concrete AST node.
 		public T visit(AST.AddExp e, Env env);
+		public T visit(AST.Unit e, Env env);
 		public T visit(AST.Const e, Env env);
 		public T visit(AST.StrConst e, Env env);
 		public T visit(AST.BoolConst e, Env env);

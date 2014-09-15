@@ -65,7 +65,7 @@ public class Reader {
 		Exp exp = parseTree.getChild(numDecls).accept(new TreeToExpConverter(parser));
 		if(exp instanceof DefineDecl) {
 			definedecls.add((DefineDecl) exp);
-			return new Program(definedecls, new Const(0));
+			return new Program(definedecls, new Unit());
 		} 
 		return new Program(definedecls, exp);
 	}

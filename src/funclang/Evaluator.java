@@ -23,37 +23,42 @@ public class Evaluator implements Visitor<Value> {
 		List<Exp> operands = e.all();
 		int result = 0;
 		for(Exp exp: operands) {
-			Num intermediate = (Num) exp.accept(this, env); // Dynamic type-checking
+			NumVal intermediate = (NumVal) exp.accept(this, env); // Dynamic type-checking
 			result += intermediate.v(); //Semantics of AddExp in terms of the target language.
 		}
-		return new Num(result);
+		return new NumVal(result);
+	}
+	
+	@Override
+	public Value visit(Unit e, Env env) {
+		return new UnitVal();
 	}
 
 	@Override
 	public Value visit(Const e, Env env) {
-		return new Num(e.v());
+		return new NumVal(e.v());
 	}
 
 	@Override
 	public Value visit(StrConst e, Env env) {
-		return new Str(e.v());
+		return new StringVal(e.v());
 	}
 
 	@Override
 	public Value visit(BoolConst e, Env env) {
-		return new Bool(e.v());
+		return new BoolVal(e.v());
 	}
 
 	@Override
 	public Value visit(DivExp e, Env env) {
 		List<Exp> operands = e.all();
-		Num lVal = (Num) operands.get(0).accept(this, env);
+		NumVal lVal = (NumVal) operands.get(0).accept(this, env);
 		double result = lVal.v(); 
 		for(int i=1; i<operands.size(); i++) {
-			Num rVal = (Num) operands.get(i).accept(this, env);
+			NumVal rVal = (NumVal) operands.get(i).accept(this, env);
 			result = result / rVal.v();
 		}
-		return new Num(result);
+		return new NumVal(result);
 	}
 
 	@Override
@@ -66,10 +71,10 @@ public class Evaluator implements Visitor<Value> {
 		List<Exp> operands = e.all();
 		double result = 1;
 		for(Exp exp: operands) {
-			Num intermediate = (Num) exp.accept(this, env); // Dynamic type-checking
+			NumVal intermediate = (NumVal) exp.accept(this, env); // Dynamic type-checking
 			result *= intermediate.v(); //Semantics of MultExp.
 		}
-		return new Num(result);
+		return new NumVal(result);
 	}
 
 	@Override
@@ -82,13 +87,13 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(SubExp e, Env env) {
 		List<Exp> operands = e.all();
-		Num lVal = (Num) operands.get(0).accept(this, env);
+		NumVal lVal = (NumVal) operands.get(0).accept(this, env);
 		double result = lVal.v();
 		for(int i=1; i<operands.size(); i++) {
-			Num rVal = (Num) operands.get(i).accept(this, env);
+			NumVal rVal = (NumVal) operands.get(i).accept(this, env);
 			result = result - rVal.v();
 		}
-		return new Num(result);
+		return new NumVal(result);
 	}
 
 	@Override
@@ -119,20 +124,20 @@ public class Evaluator implements Visitor<Value> {
 		Exp value_exp = e.value_exp();
 		Value value = (Value) value_exp.accept(this, env);
 		initEnv = new ExtendEnv(initEnv, name, value);
-		return new Value.Unit();		
+		return new Value.UnitVal();		
 	}	
 
 	@Override
 	public Value visit(LambdaExp e, Env env) { // New for funclang.
-		return new Value.Fun(env, e.formals(), e.body());
+		return new Value.FunVal(env, e.formals(), e.body());
 	}
 	
 	@Override
 	public Value visit(CallExp e, Env env) { // New for funclang.
 		Object result = e.operator().accept(this, env);
-		if(!(result instanceof Value.Fun))
+		if(!(result instanceof Value.FunVal))
 			return new Value.DynamicError("Operator not a function in call " +  ts.visit(e, env));
-		Value.Fun operator =  (Value.Fun) result; //Dynamic checking
+		Value.FunVal operator =  (Value.FunVal) result; //Dynamic checking
 		List<Exp> operands = e.operands();
 
 		// Call-by-value semantics
@@ -171,9 +176,9 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(IfExp e, Env env) { // New for funclang.
 		Object result = e.conditional().accept(this, env);
-		if(!(result instanceof Value.Bool))
+		if(!(result instanceof Value.BoolVal))
 			return new Value.DynamicError("Condition not a boolean in expression " +  ts.visit(e, env));
-		Value.Bool condition =  (Value.Bool) result; //Dynamic checking
+		Value.BoolVal condition =  (Value.BoolVal) result; //Dynamic checking
 		
 		if(condition.v())
 			return (Value) e.then_exp().accept(this, env);
@@ -182,35 +187,35 @@ public class Evaluator implements Visitor<Value> {
 
 	@Override
 	public Value visit(LessExp e, Env env) { // New for funclang.
-		Value.Num first = (Value.Num) e.first_exp().accept(this, env);
-		Value.Num second = (Value.Num) e.second_exp().accept(this, env);
-		return new Value.Bool(first.v() < second.v());
+		Value.NumVal first = (Value.NumVal) e.first_exp().accept(this, env);
+		Value.NumVal second = (Value.NumVal) e.second_exp().accept(this, env);
+		return new Value.BoolVal(first.v() < second.v());
 	}
 	
 	@Override
 	public Value visit(EqualExp e, Env env) { // New for funclang.
-		Value.Num first = (Value.Num) e.first_exp().accept(this, env);
-		Value.Num second = (Value.Num) e.second_exp().accept(this, env);
-		return new Value.Bool(first.v() == second.v());
+		Value.NumVal first = (Value.NumVal) e.first_exp().accept(this, env);
+		Value.NumVal second = (Value.NumVal) e.second_exp().accept(this, env);
+		return new Value.BoolVal(first.v() == second.v());
 	}
 
 	@Override
 	public Value visit(GreaterExp e, Env env) { // New for funclang.
-		Value.Num first = (Value.Num) e.first_exp().accept(this, env);
-		Value.Num second = (Value.Num) e.second_exp().accept(this, env);
-		return new Value.Bool(first.v() > second.v());
+		Value.NumVal first = (Value.NumVal) e.first_exp().accept(this, env);
+		Value.NumVal second = (Value.NumVal) e.second_exp().accept(this, env);
+		return new Value.BoolVal(first.v() > second.v());
 	}
 	
 	public Value visit(EvalExp e, Env env) {
-		Str programText = (Str) e.code().accept(this, env);
+		StringVal programText = (StringVal) e.code().accept(this, env);
 		Program p = _reader.parse(programText.v());
 		return (Value) p.accept(this, env);
 	}
 
 	public Value visit(ReadExp e, Env env) {
-		Str fileName = (Str) e.file().accept(this, env);
+		StringVal fileName = (StringVal) e.file().accept(this, env);
 		String text = Reader.readFile("" + System.getProperty("user.dir") + File.separator + fileName.v());
-		return new Str(text);
+		return new StringVal(text);
 	}
 
 	private Env initialEnv() {
@@ -220,14 +225,14 @@ public class Evaluator implements Visitor<Value> {
 		List<String> formals = new ArrayList<>();
 		formals.add("file");
 		Exp body = new AST.ReadExp(new VarExp("file"));
-		Value.Fun readFun = new Value.Fun(initEnv, formals, body);
+		Value.FunVal readFun = new Value.FunVal(initEnv, formals, body);
 		initEnv = new Env.ExtendEnv(initEnv, "read", readFun);
 
 		/* Procedure: (require <filename>). Following is same as (define require (lambda (file) (eval (read file)))) */
 		formals = new ArrayList<>();
 		formals.add("file");
 		body = new EvalExp(new AST.ReadExp(new VarExp("file")));
-		Value.Fun requireFun = new Value.Fun(initEnv, formals, body);
+		Value.FunVal requireFun = new Value.FunVal(initEnv, formals, body);
 		initEnv = new Env.ExtendEnv(initEnv, "require", requireFun);
 		
 		/* Add new built-in procedures here */ 

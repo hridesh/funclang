@@ -6,7 +6,8 @@ import funclang.AST.Exp;
 
 public class Printer {
 	public void print(Value v) {
-		System.out.println(v.tostring());
+		if(v.tostring() != "")
+			System.out.println(v.tostring());
 	}
 	public void print(Exception e) {
 		System.out.println(e.toString());
@@ -21,6 +22,10 @@ public class Printer {
 			return result + ")";
 		}
 		
+		public String visit(AST.Unit e, Env env) {
+			return "unit";
+		}
+
 		public String visit(AST.Const e, Env env) {
 			return "" + e.v();
 		}
