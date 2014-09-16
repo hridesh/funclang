@@ -33,8 +33,8 @@
 
 (define map
 	(lambda (op lst)
-		(if (null? lst) (null)
-			(cons (op (car lst)) (map (cdr lst)))
+		(if (null? lst) (list)
+			(cons (op (car lst)) (map op (cdr lst)))
 		)		
 	)
 )
