@@ -15,7 +15,7 @@ public class Evaluator implements Visitor<Value> {
 	Env initEnv = initialEnv(); //New for definelang
 	
 	Value valueOf(Program p) {
-		return (Value) p.accept(this, initEnv);
+			return (Value) p.accept(this, initEnv);
 	}
 	
 	@Override
@@ -79,9 +79,13 @@ public class Evaluator implements Visitor<Value> {
 
 	@Override
 	public Value visit(Program p, Env env) {
-		for(DefineDecl d: p.decls())
-			d.accept(this, initEnv);
-		return (Value) p.e().accept(this, initEnv);
+		try {
+			for(DefineDecl d: p.decls())
+				d.accept(this, initEnv);
+			return (Value) p.e().accept(this, initEnv);
+		} catch (ClassCastException e) {
+			return new DynamicError(e.getMessage());
+		}
 	}
 
 	@Override
@@ -215,12 +219,6 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(CdrExp e, Env env) { 
 		Value.PairVal pair = (Value.PairVal) e.arg().accept(this, env);
-		Value result = pair.snd();
-		//Special case for list: cdr of a list is a list also.
-		if(pair instanceof Value.ExtendList) {
-			if(result instanceof Value.EmptyList) return result;
-			return new ExtendList(((Value.PairVal)result).fst(),((Value.PairVal)result).snd());
-		}
 		return pair.snd();
 	}
 	
@@ -228,14 +226,6 @@ public class Evaluator implements Visitor<Value> {
 	public Value visit(ConsExp e, Env env) { 
 		Value first = (Value) e.fst().accept(this, env);
 		Value second = (Value) e.snd().accept(this, env);
-		//Special case for list: cdr of a list is a list also.
-		if(second instanceof Value.EmptyList) 
-			return new Value.ExtendList(first, second);
-		else if(second instanceof Value.ExtendList) {
-			ExtendList rest = (Value.ExtendList) second;
-			PairVal newSecond = new PairVal(rest.fst(), rest.snd());
-			return new ExtendList(first, newSecond);
-		}
 		return new Value.PairVal(first, second);
 	}
 
@@ -244,27 +234,23 @@ public class Evaluator implements Visitor<Value> {
 		List<Exp> elemExps = e.elems();
 		int length = elemExps.size();
 		if(length == 0)
-			return new Value.EmptyList();
+			return new Value.Null();
 		
-		List<Value> elems = new ArrayList<Value>(length);
-		for(Exp exp : elemExps) 
-			elems.add((Value) exp.accept(this, env));
+		//Order of evaluation: left to right e.g. (list (+ 3 4) (+ 5 4)) 
+		Value[] elems = new Value[length];
+		for(int i=0; i<length; i++)
+			elems[i] = (Value) elemExps.get(i).accept(this, env);
 		
-		Value.PairVal list = null;
-		for(int i=length-1; i>0; i--) {
-			if(list == null)
-				list = new PairVal(elems.get(i), new Value.EmptyList());
-			else list = new PairVal(elems.get(i),list);
-		}
-		if(list == null) list = new ExtendList(elems.get(0), new Value.EmptyList());
-		else list = new ExtendList(elems.get(0),list);
-		return list;
-	}
+		Value result = new Value.Null();
+		for(int i=length-1; i>=0; i--) 
+			result = new PairVal(elems[i], result);
+		return result;
+	}	
 	
 	@Override
 	public Value visit(NullExp e, Env env) {
 		Value val = (Value) e.arg().accept(this, env);
-		return new BoolVal(val instanceof Value.EmptyList);
+		return new BoolVal(val instanceof Value.Null);
 	}
 
 	public Value visit(EvalExp e, Env env) {

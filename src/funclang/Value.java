@@ -56,42 +56,29 @@ public interface Value {
 		public Value fst() { return _fst; }
 		public Value snd() { return _snd; }
 	    public java.lang.String tostring() { 
+	    	if(isList()) return listToString();
 	    	return "(" + _fst.tostring() + " " + _snd.tostring() + ")"; 
 	    }
-	    protected java.lang.String tostringHelper() { 
-	    	String result = "";
-	    	if(_fst instanceof Value.PairVal && !(_fst instanceof Value.ExtendList))
-	    		result += ((Value.PairVal) _fst).tostringHelper();
-	    	else result += _fst.tostring();
-	    	if(!(_snd instanceof Value.EmptyList)){
-	    		result += " ";
-	    		if(_snd instanceof Value.PairVal && !(_snd instanceof Value.ExtendList))
-	    			result += ((Value.PairVal) _snd).tostringHelper();
-	    		else result += _snd.tostring();
-	    	}
-	    	return result;
+	    private boolean isList() {
+	    	if(_snd instanceof Value.Null) return true;
+	    	if(_snd instanceof Value.PairVal &&
+	    		((Value.PairVal) _snd).isList()) return true;
+	    	return false;
 	    }
-	}
-	static interface ListVal extends Value {}
-	static class EmptyList implements ListVal {
-		public EmptyList() {}
-	    public String tostring() { return "()"; }
-	}
-	static class ExtendList extends PairVal implements ListVal {
-		public ExtendList(Value fst, Value snd) { super(fst, snd); }		
-	    public String tostring() {
+	    private java.lang.String listToString() {
 	    	String result = "(";
-	    	if(_fst instanceof Value.PairVal && !(_fst instanceof Value.ExtendList))
-	    		result += ((Value.PairVal) _fst).tostringHelper();
-	    	else result += _fst.tostring();
-	    	if(!(_snd instanceof Value.EmptyList)){
-	    		result += " ";
-	    		if(_snd instanceof Value.PairVal && !(_snd instanceof Value.ExtendList))
-	    			result += ((Value.PairVal) _snd).tostringHelper();
-	    		else result += _snd.tostring();
+	    	result += _fst.tostring();
+	    	Value next = _snd; 
+	    	while(!(next instanceof Value.Null)) {
+	    		result += " " + ((PairVal) next)._fst.tostring();
+	    		next = ((PairVal) next)._snd;
 	    	}
-	    	return result += ")";
+	    	return result + ")";
 	    }
+	}
+	static class Null implements Value {
+		public Null() {}
+	    public String tostring() { return "()"; }
 	}
 	static class UnitVal implements Value {
 		public static final UnitVal v = new UnitVal();
