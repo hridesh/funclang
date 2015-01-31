@@ -1,5 +1,0 @@
-(define i 1)
-(define ii 2)
-(define iii 3)
-(define iv 4)
-(define v 5)
