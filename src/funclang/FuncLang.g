@@ -192,7 +192,6 @@ grammar FuncLang;
  Define : 'define' ;
  Let : 'let' ;
  Dot : '.' ;
- Letrec : 'letrec' ;
  Lambda : 'lambda' ;
  If : 'if' ; 
  Car : 'car' ; 
