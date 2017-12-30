@@ -22,19 +22,19 @@ public class Printer {
 			return result + ")";
 		}
 		
-		public String visit(AST.Unit e, Env env) {
+		public String visit(AST.UnitExp e, Env env) {
 			return "unit";
 		}
 
-		public String visit(AST.Const e, Env env) {
+		public String visit(AST.NumExp e, Env env) {
 			return "" + e.v();
 		}
 		
-		public String visit(AST.StrConst e, Env env) {
+		public String visit(AST.StrExp e, Env env) {
 			return e.v();
 		}
 		
-		public String visit(AST.BoolConst e, Env env) {
+		public String visit(AST.BoolExp e, Env env) {
 			if(e.v()) return "#t";
 			return "#f";
 		}
@@ -45,11 +45,7 @@ public class Printer {
 				result += exp.accept(this, env) + " ";
 			return result + ")";
 		}
-		
-		public String visit(AST.ErrorExp e, Env env) {
-			return e.toString();
-		}
-		
+				
 		public String visit(AST.ReadExp e, Env env) {
 			return "(read " + e.file().accept(this, env) + ")";
 		}
