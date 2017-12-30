@@ -5,6 +5,7 @@ import static funclang.Value.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.File;
+import java.io.IOException;
 
 import funclang.Env.*;
 
@@ -21,7 +22,7 @@ public class Evaluator implements Visitor<Value> {
 	@Override
 	public Value visit(AddExp e, Env env) {
 		List<Exp> operands = e.all();
-		int result = 0;
+		double result = 0;
 		for(Exp exp: operands) {
 			NumVal intermediate = (NumVal) exp.accept(this, env); // Dynamic type-checking
 			result += intermediate.v(); //Semantics of AddExp in terms of the target language.
@@ -30,22 +31,22 @@ public class Evaluator implements Visitor<Value> {
 	}
 	
 	@Override
-	public Value visit(Unit e, Env env) {
+	public Value visit(UnitExp e, Env env) {
 		return new UnitVal();
 	}
 
 	@Override
-	public Value visit(Const e, Env env) {
+	public Value visit(NumExp e, Env env) {
 		return new NumVal(e.v());
 	}
 
 	@Override
-	public Value visit(StrConst e, Env env) {
+	public Value visit(StrExp e, Env env) {
 		return new StringVal(e.v());
 	}
 
 	@Override
-	public Value visit(BoolConst e, Env env) {
+	public Value visit(BoolExp e, Env env) {
 		return new BoolVal(e.v());
 	}
 
@@ -59,11 +60,6 @@ public class Evaluator implements Visitor<Value> {
 			result = result / rVal.v();
 		}
 		return new NumVal(result);
-	}
-
-	@Override
-	public Value visit(ErrorExp e, Env env) {
-		return new Value.DynamicError("Encountered an error expression");
 	}
 
 	@Override
@@ -127,7 +123,7 @@ public class Evaluator implements Visitor<Value> {
 		String name = e.name();
 		Exp value_exp = e.value_exp();
 		Value value = (Value) value_exp.accept(this, env);
-		initEnv = new ExtendEnv(initEnv, name, value);
+		((GlobalEnv) initEnv).extend(name, value);
 		return new Value.UnitVal();		
 	}	
 
@@ -153,30 +149,13 @@ public class Evaluator implements Visitor<Value> {
 		if (formals.size()!=actuals.size())
 			return new Value.DynamicError("Argument mismatch in call " + ts.visit(e, env));
 
-		Env closure_env = operator.env();
-		Env fun_env = appendEnv(closure_env, initEnv);
+		Env fun_env = operator.env();
 		for (int index = 0; index < formals.size(); index++)
 			fun_env = new ExtendEnv(fun_env, formals.get(index), actuals.get(index));
 		
 		return (Value) operator.body().accept(this, fun_env);
 	}
-	
-	/* Helper for CallExp */
-	/***
-	 * Create an env that has bindings from fst appended to bindings from snd.
-	 * The order in which 
-	 * @param fst
-	 * @param snd
-	 * @return
-	 */
-	private Env appendEnv(Env fst, Env snd){
-		if(fst.isEmpty())
-			return snd;
-		ExtendEnv f = (ExtendEnv) fst;
-		return new ExtendEnv(appendEnv(f.saved_env(),snd), f.var(), f.val());
-	}
-	/* End: helper for CallExp */
-	
+		
 	@Override
 	public Value visit(IfExp e, Env env) { // New for funclang.
 		Object result = e.conditional().accept(this, env);
@@ -261,26 +240,30 @@ public class Evaluator implements Visitor<Value> {
 
 	public Value visit(ReadExp e, Env env) {
 		StringVal fileName = (StringVal) e.file().accept(this, env);
-		String text = Reader.readFile("" + System.getProperty("user.dir") + File.separator + fileName.v());
-		return new StringVal(text);
+		try {
+			String text = Reader.readFile("" + System.getProperty("user.dir") + File.separator + fileName.v());
+			return new StringVal(text);
+		} catch (IOException ex) {
+			return new DynamicError(ex.getMessage());
+		}
 	}
 
 	private Env initialEnv() {
-		Env initEnv = new EmptyEnv();
+		GlobalEnv initEnv = new GlobalEnv();
 		
 		/* Procedure: (read <filename>). Following is same as (define read (lambda (file) (read file))) */
 		List<String> formals = new ArrayList<>();
 		formals.add("file");
 		Exp body = new AST.ReadExp(new VarExp("file"));
 		Value.FunVal readFun = new Value.FunVal(initEnv, formals, body);
-		initEnv = new Env.ExtendEnv(initEnv, "read", readFun);
+		initEnv.extend("read", readFun);
 
 		/* Procedure: (require <filename>). Following is same as (define require (lambda (file) (eval (read file)))) */
 		formals = new ArrayList<>();
 		formals.add("file");
 		body = new EvalExp(new AST.ReadExp(new VarExp("file")));
 		Value.FunVal requireFun = new Value.FunVal(initEnv, formals, body);
-		initEnv = new Env.ExtendEnv(initEnv, "require", requireFun);
+		initEnv.extend("require", requireFun);
 		
 		/* Add new built-in procedures here */ 
 		

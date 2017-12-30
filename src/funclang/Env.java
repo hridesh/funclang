@@ -43,4 +43,21 @@ public interface Env {
 		public String var() { return _var; }
 		public Value val() { return _val; }
 	}
+
+	static public class GlobalEnv implements Env {
+		private java.util.Hashtable<String, Value> map;
+		public GlobalEnv(){
+			map = new java.util.Hashtable<String, Value>();
+		}
+		public synchronized Value get (String search_var) {
+			if(map.containsKey(search_var))
+				return map.get(search_var);
+			throw new LookupException("No binding found for name: " + search_var);
+		}
+		public synchronized void extend (String var, Value val) {
+			map.put(var, val);
+		}
+		public boolean isEmpty() { return map.isEmpty(); }
+	}
+
 }
