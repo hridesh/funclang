@@ -1,6 +1,7 @@
 package funclang;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.FileReader;
@@ -45,9 +46,10 @@ public class Reader {
 		return runFile(programText);
 	}
 	
+	protected String getProgramDirectory() { return "build"+File.separator+"funclang"+File.separator+"examples"+File.separator; }
 	private String runFile(String programText) throws IOException {
 		if(programText.startsWith("run ")){
-			programText = readFile("build/funclang/examples/" + programText.substring(4));
+			programText = readFile(getProgramDirectory() + programText.substring(4));
 		}
 		return programText; 
 	}
