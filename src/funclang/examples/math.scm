@@ -1,18 +1,18 @@
 
-(define even? 
+(define even
 	(lambda (n)
 		(if (= n 0) #t
-			(if (odd? (- n 1)) #t
+			(if (odd (- n 1)) #t
 				#f
 			)
 		)
 	)
 )
 
-(define odd? 
+(define odd 
 	(lambda (n)
 		(if (= n 0) #f
-			(if (even? (- n 1)) #t
+			(if (even (- n 1)) #t
 				#f
 			)
 		)
