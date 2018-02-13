@@ -128,7 +128,11 @@ public class Evaluator implements Visitor<Value> {
 	}	
 
 	@Override
-	public Value visit(LambdaExp e, Env env) { // New for funclang.
+	public Value visit(LambdaExp e, Env env) {
+        // Create a function value with three components:
+		//  1. formal parameters of the function - e.formals()
+		//  2. actual body of the function - e.body()
+		//  3. mapping from the free variables in the function body to their values.
 		return new Value.FunVal(env, e.formals(), e.body());
 	}
 	
@@ -146,7 +150,7 @@ public class Evaluator implements Visitor<Value> {
 			actuals.add((Value)exp.accept(this, env));
 		
 		List<String> formals = operator.formals();
-		if (formals.size()!=actuals.size())
+ 		if (formals.size()!=actuals.size())
 			return new Value.DynamicError("Argument mismatch in call " + ts.visit(e, env));
 
 		Env fun_env = operator.env();
