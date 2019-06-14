@@ -14,7 +14,7 @@ import java.util.List;
 @SuppressWarnings("rawtypes")
 public interface AST {
 	public static abstract class ASTNode implements AST {
-		public abstract Object accept(Visitor visitor, Env env);
+		public abstract <T> T accept(Visitor<T> visitor, Env env);
 	}
 	public static class Program extends ASTNode {
 		List<DefineDecl> _decls;
@@ -33,7 +33,7 @@ public interface AST {
 			return _decls;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -52,7 +52,7 @@ public interface AST {
 			return _name;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -61,7 +61,7 @@ public interface AST {
 		
 		public UnitExp() {}
 
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 
@@ -78,7 +78,7 @@ public interface AST {
 			return _val;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -94,7 +94,7 @@ public interface AST {
 			return _val;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -110,7 +110,7 @@ public interface AST {
 			return _val;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -180,7 +180,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -203,7 +203,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -225,7 +225,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -247,7 +247,7 @@ public interface AST {
 			super(left, right);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -271,7 +271,7 @@ public interface AST {
 			_body = body;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 		
@@ -300,7 +300,7 @@ public interface AST {
 			_value_exp = value_exp;
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 		
@@ -329,7 +329,7 @@ public interface AST {
 		
 		public Exp body() { return _body; }
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -353,7 +353,7 @@ public interface AST {
 
 		public List<Exp> operands() { return _operands; }
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -381,7 +381,7 @@ public interface AST {
 		public Exp then_exp() { return _then_exp; }
 		public Exp else_exp() { return _else_exp; }
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -399,7 +399,7 @@ public interface AST {
 			super(first_exp, second_exp);
 		}
 				
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -428,7 +428,7 @@ public interface AST {
 			super(first_exp, second_exp);
 		}
 		
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -446,7 +446,7 @@ public interface AST {
 			super(first_exp, second_exp);
 		}
 				
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -465,7 +465,7 @@ public interface AST {
 			_arg = arg;
 		}
 		public Exp arg() { return _arg; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -484,7 +484,7 @@ public interface AST {
 			_arg = arg;
 		}
 		public Exp arg() { return _arg; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -506,7 +506,7 @@ public interface AST {
 		}
 		public Exp fst() { return _fst; }
 		public Exp snd() { return _snd; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -525,7 +525,7 @@ public interface AST {
 			_elems = elems;
 		}
 		public List<Exp> elems() { return _elems; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -544,7 +544,7 @@ public interface AST {
 			_arg = arg;
 		}
 		public Exp arg() { return _arg; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -560,7 +560,7 @@ public interface AST {
 			_code = code;
 		}
 		public Exp code() { return _code; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -576,7 +576,7 @@ public interface AST {
 			_file = file;
 		}
 		public Exp file() { return _file; }
-		public Object accept(Visitor visitor, Env env) {
+		public <T> T accept(Visitor<T> visitor, Env env) {
 			return visitor.visit(this, env);
 		}
 	}
