@@ -98,8 +98,12 @@ public class Evaluator implements Visitor<Value> {
 
 	@Override
 	public Value visit(VarExp e, Env env) {
-		// Previously, all variables had value 42. New semantics.
-		return env.get(e.name());
+		Value v = env.get(e.name());
+		if(v instanceof Value.Promise) {
+			Promise promise = (Promise) v;
+			v = promise.body().accept(this, promise.env());
+		}
+		return v;
 	}	
 
 	@Override
@@ -137,25 +141,25 @@ public class Evaluator implements Visitor<Value> {
 	}
 	
 	@Override
-	public Value visit(CallExp e, Env env) { // New for funclang.
+	public Value visit(CallExp e, Env env) {
 		Object result = e.operator().accept(this, env);
 		if(!(result instanceof Value.FunVal))
 			return new Value.DynamicError("Operator not a function in call " +  ts.visit(e, env));
-		Value.FunVal operator =  (Value.FunVal) result; //Dynamic checking
+		Value.FunVal operator =  (Value.FunVal) result;
 		List<Exp> operands = e.operands();
 
-		// Call-by-value semantics
-		List<Value> actuals = new ArrayList<Value>(operands.size());
+		// Call-by-name semantics
+		List<Value> promises = new ArrayList<Value>(operands.size());
 		for(Exp exp : operands) 
-			actuals.add((Value)exp.accept(this, env));
+			promises.add(new Value.Promise(env, exp));
 		
 		List<String> formals = operator.formals();
- 		if (formals.size()!=actuals.size())
+ 		if (formals.size() != promises.size())
 			return new Value.DynamicError("Argument mismatch in call " + ts.visit(e, env));
 
 		Env fun_env = operator.env();
 		for (int index = 0; index < formals.size(); index++)
-			fun_env = new ExtendEnv(fun_env, formals.get(index), actuals.get(index));
+			fun_env = new ExtendEnv(fun_env, formals.get(index), promises.get(index));
 		
 		return (Value) operator.body().accept(this, fun_env);
 	}
