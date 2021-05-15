@@ -27,6 +27,21 @@ public interface Value {
 			return result + ")";
 	    }
 	}
+	static class Promise implements Value { //New for call by name
+		private Env _env;
+		private Exp _body;
+		public Promise(Env env, Exp body) {
+			_env = env;
+			_body = body;
+		}
+		public Env env() { return _env; }
+		public Exp body() { return _body; }
+	    public String tostring() { 
+			String result = "(promise ()";
+			result += _body.accept(new Printer.Formatter(), _env);
+			return result + ")";
+	    }
+	}
 	static class NumVal implements Value {
 	    private double _val;
 	    public NumVal(double v) { _val = v; } 
