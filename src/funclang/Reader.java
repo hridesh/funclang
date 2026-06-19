@@ -10,6 +10,7 @@ import funclang.AST.Program;
 import funclang.parser.FuncLangLexer;
 import funclang.parser.FuncLangParser;
 
+@SuppressWarnings("deprecation")
 public class Reader {
 	
 	Program read() throws IOException {
